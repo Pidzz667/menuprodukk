@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --blue:#1769ff; --blue2:#5ab1ff; --ink:#081735; --muted:#6b7893;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--ink);background:
+  radial-gradient(circle at 10% 0%,rgba(84,168,255,.20),transparent 28rem),
+  radial-gradient(circle at 90% 10%,rgba(23,105,255,.13),transparent 30rem),#f7faff;
+  font-family:Arial,Helvetica,sans-serif;overflow-x:hidden
+}
+button,input{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+::selection{background:#1769ff;color:#fff}
+.mesh{
+ background-image:linear-gradient(rgba(23,105,255,.04) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(23,105,255,.04) 1px,transparent 1px);
+ background-size:34px 34px
+}
+.glass{
+ background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.95);
+ box-shadow:0 18px 60px rgba(31,78,150,.09),inset 0 1px 0 rgba(255,255,255,.85);
+ backdrop-filter:blur(20px)
+}
+.card3d{transform:translateZ(0);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .35s}
+.card3d:hover{transform:translateY(-7px) rotateX(1deg);box-shadow:0 26px 60px rgba(24,91,185,.15);border-color:rgba(23,105,255,.24)}
+.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{scrollbar-width:none}
+.shine{position:relative;overflow:hidden}
+.shine:after{content:"";position:absolute;inset:-80% -20%;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.7) 50%,transparent 60%);transform:translateX(-70%);animation:shine 5s infinite;pointer-events:none}
+@keyframes shine{0%,55%{transform:translateX(-70%)}75%,100%{transform:translateX(70%)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.float{animation:float 4.5s ease-in-out infinite}
+@keyframes pulseBlue{0%,100%{box-shadow:0 0 0 0 rgba(23,105,255,.15)}50%{box-shadow:0 0 0 14px rgba(23,105,255,0)}}
+.pulse-blue{animation:pulseBlue 2.2s infinite}
