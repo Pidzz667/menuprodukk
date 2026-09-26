@@ -40,7 +40,7 @@
         body {
             background-color: #070b14;
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
             background-attachment: fixed;
             min-height: 100vh;
@@ -80,7 +80,7 @@
             box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
         }
 
-        /* Intro Screen */
+        /* Intro Screen Transitions */
         #intro-screen {
             transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
         }
@@ -105,7 +105,7 @@
 </head>
 <body class="font-sans antialiased selection:bg-sky-600 selection:text-white relative overflow-x-hidden">
 
-    <!-- INTRO SPLASH SCREEN (PidzStore Tech Intro) -->
+    <!-- INTRO SPLASH SCREEN -->
     <div id="intro-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050912] text-white">
         <div class="relative z-10 flex flex-col items-center text-center px-4">
             
@@ -127,8 +127,8 @@
             </p>
 
             <!-- Loading Indicator -->
-            <div class="w-40 h-1 bg-slate-800 rounded-full overflow-hidden">
-                <div id="intro-bar" class="h-full bg-sky-500 rounded-full w-0 transition-all duration-500"></div>
+            <div class="w-40 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="intro-bar" class="h-full bg-sky-500 rounded-full w-0 transition-all duration-700 ease-out"></div>
             </div>
         </div>
     </div>
@@ -152,7 +152,7 @@
 
             <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 rounded-lg bg-sky-950 border border-sky-500/30 text-[11px] text-sky-300 font-semibold flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> PidzStore Engine
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> PidzStore Engine
                 </span>
             </div>
         </header>
@@ -333,7 +333,7 @@
                                 <i class="fa-solid fa-file-arrow-down"></i> Unduh Langsung ke Perangkat
                             </button>
 
-                            <!-- Alternative Direct Link Button (For YT MP4 Fallback) -->
+                            <!-- Alternative Direct Link Button -->
                             <a id="btn-dl-alt" href="#" target="_blank" rel="noopener noreferrer" class="hidden bg-slate-800 hover:bg-slate-700 w-full py-2 px-4 rounded-lg text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition border border-slate-700">
                                 <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i> Buka Tautan Unduhan Server 2
                             </a>
@@ -387,6 +387,18 @@
         let currentService = null;
         let lastResultData = null;
 
+        const SERVICES = [
+            { id: 'tiktok', name: 'TikTok Video', icon: 'fa-brands fa-tiktok', patterns: [/tiktok\.com/i] },
+            { id: 'instagram', name: 'Instagram Reel', icon: 'fa-brands fa-instagram', patterns: [/instagram\.com/i, /instagr\.am/i] },
+            { id: 'ytshort', name: 'YouTube Shorts', icon: 'fa-solid fa-bolt', patterns: [/youtube\.com\/shorts/i] },
+            { id: 'ytmp4', name: 'YouTube MP4', icon: 'fa-brands fa-youtube', patterns: [/youtube\.com/i, /youtu\.be/i] },
+            { id: 'ytmp3', name: 'YouTube MP3', icon: 'fa-solid fa-music', patterns: [] },
+            { id: 'spotify', name: 'Spotify Audio', icon: 'fa-brands fa-spotify', patterns: [/spotify\.com/i] },
+            { id: 'pinterest', name: 'Pinterest Media', icon: 'fa-brands fa-pinterest', patterns: [/pinterest\.com/i, /pin\.it/i] },
+            { id: 'capcut', name: 'CapCut Video', icon: 'fa-solid fa-scissors', patterns: [/capcut\.com/i] },
+            { id: 'terabox', name: 'TeraBox File', icon: 'fa-solid fa-box-archive', patterns: [/terabox\.com/i, /1024tera\.com/i, /teraboxapp\.com/i] }
+        ];
+
         const ENDPOINTS = {
             spotify: "https://hyerls.my.id/api/spotify.php",
             pinterest: "https://hyerls.my.id/api/pintv1.php",
@@ -399,24 +411,118 @@
             capcut: "https://hyerls.my.id/api/capcut.php"
         };
 
-        // Intro Splash Screen Progress
         window.addEventListener('DOMContentLoaded', () => {
             const introBar = document.getElementById('intro-bar');
             const introScreen = document.getElementById('intro-screen');
 
-            setTimeout(() => { if (introBar) introBar.style.width = '50%'; }, 150);
-            setTimeout(() => { if (introBar) introBar.style.width = '100%'; }, 500);
+            loadHistoryUI();
 
+            // Animate progress bar
+            setTimeout(() => {
+                if (introBar) introBar.style.width = '100%';
+            }, 100);
+
+            // Fade out intro splash screen
             setTimeout(() => {
                 if (introScreen) {
                     introScreen.classList.add('fade-out');
+                    setTimeout(() => {
+                        introScreen.style.display = 'none';
+                    }, 600);
                 }
-            }, 900);
-
-            loadHistoryUI();
+            }, 1200);
         });
 
-        // Extract YouTube Video ID safely
+        function detectPlatform(url) {
+            if (!url) return null;
+            for (const s of SERVICES) {
+                for (const p of s.patterns) {
+                    if (p.test(url)) return s;
+                }
+            }
+            return null;
+        }
+
+        function handleUrlInput() {
+            const input = document.getElementById('media-url');
+            const val = input.value.trim();
+            const clearBtn = document.getElementById('clear-btn');
+            const icon = document.getElementById('platform-icon');
+            const detectedEl = document.getElementById('detected-service');
+
+            if (val.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+                clearInput();
+                return;
+            }
+
+            const detected = detectPlatform(val);
+            if (detected) {
+                currentService = detected.id;
+                icon.className = detected.icon + " text-sky-400 text-base";
+                detectedEl.innerHTML = `<i class="${detected.icon} text-xs"></i> Terdeteksi: ${detected.name}`;
+                highlightServiceCard(detected.id);
+            } else {
+                icon.className = "fa-solid fa-link text-slate-400 text-base";
+                detectedEl.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Deteksi Otomatis Active`;
+            }
+        }
+
+        function selectService(serviceId) {
+            currentService = serviceId;
+            highlightServiceCard(serviceId);
+            
+            const detectedEl = document.getElementById('detected-service');
+            const icon = document.getElementById('platform-icon');
+            const serviceObj = SERVICES.find(s => s.id === serviceId);
+
+            if (serviceObj) {
+                detectedEl.innerHTML = `<i class="${serviceObj.icon} text-xs"></i> Mode Dipilih: ${serviceObj.name}`;
+                icon.className = serviceObj.icon + " text-sky-400 text-base";
+            }
+        }
+
+        function highlightServiceCard(serviceId) {
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('border-sky-500', 'bg-sky-950/50', 'ring-1', 'ring-sky-500/50');
+                card.classList.add('border-slate-800');
+            });
+
+            const activeBtn = document.getElementById(`service-${serviceId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-slate-800');
+                activeBtn.classList.add('border-sky-500', 'bg-sky-950/50', 'ring-1', 'ring-sky-500/50');
+            }
+        }
+
+        function clearInput() {
+            const input = document.getElementById('media-url');
+            input.value = '';
+            document.getElementById('clear-btn').classList.add('hidden');
+            document.getElementById('platform-icon').className = 'fa-solid fa-link text-slate-400 text-base';
+            document.getElementById('detected-service').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Deteksi Otomatis Active';
+            currentService = null;
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('border-sky-500', 'bg-sky-950/50', 'ring-1', 'ring-sky-500/50');
+                card.classList.add('border-slate-800');
+            });
+        }
+
+        async function pasteClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    document.getElementById('media-url').value = text;
+                    handleUrlInput();
+                    showToast("Tautan berhasil ditempel!", "success");
+                }
+            } catch (err) {
+                showToast("Gagal membaca clipboard. Izinkan akses atau tempel manual.", "warning");
+            }
+        }
+
         function extractYouTubeId(url) {
             if (!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -424,174 +530,129 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        function handleUrlInput() {
-            const urlInput = document.getElementById('media-url').value.trim();
-            const clearBtn = document.getElementById('clear-btn');
-            
-            clearBtn.classList.toggle('hidden', urlInput === '');
-
-            if (!urlInput) {
-                resetServiceHighlight();
-                updateBadge("Deteksi Otomatis Active", "fa-wand-magic-sparkles", "text-sky-400");
-                return;
+        async function fetchWithCorsProxy(url, options = {}) {
+            try {
+                const res = await fetch(url, options);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) return data;
+                }
+            } catch (e) {
+                console.warn("Direct fetch skipped...", e);
             }
 
-            const detected = detectPlatform(urlInput);
-            if (detected) {
-                selectService(detected.id, false);
-                updateBadge(`Terdeteksi: ${detected.name}`, detected.icon, "text-emerald-400");
-            } else {
-                resetServiceHighlight();
-                updateBadge("Platform Tidak Dikenali - Pilih Manual", "fa-circle-exclamation", "text-amber-400");
+            try {
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                const res = await fetch(proxyUrl, options);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) return data;
+                }
+            } catch (e) {
+                console.warn("CorsProxy skipped...", e);
             }
-        }
 
-        function detectPlatform(url) {
-            const lower = url.toLowerCase();
-            if (lower.includes('tiktok.com') || lower.includes('vt.tiktok.com')) return { id: 'tiktok', name: 'TikTok Video', icon: 'fa-brands fa-tiktok' };
-            if (lower.includes('instagram.com') || lower.includes('instagr.am')) return { id: 'instagram', name: 'Instagram Reel', icon: 'fa-brands fa-instagram' };
-            if (lower.includes('youtube.com/shorts')) return { id: 'ytshort', name: 'YouTube Shorts', icon: 'fa-solid fa-bolt' };
-            if (lower.includes('youtube.com') || lower.includes('youtu.be')) return { id: 'ytmp4', name: 'YouTube Video MP4', icon: 'fa-brands fa-youtube' };
-            if (lower.includes('open.spotify.com')) return { id: 'spotify', name: 'Spotify Music', icon: 'fa-brands fa-spotify' };
-            if (lower.includes('pin.it') || lower.includes('pinterest.com')) return { id: 'pinterest', name: 'Pinterest Media', icon: 'fa-brands fa-pinterest' };
-            if (lower.includes('terabox') || lower.includes('1024tera.com')) return { id: 'terabox', name: 'TeraBox Cloud', icon: 'fa-solid fa-box-archive' };
-            if (lower.includes('capcut.com')) return { id: 'capcut', name: 'CapCut Video', icon: 'fa-solid fa-scissors' };
+            try {
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                const res = await fetch(proxyUrl, options);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) return data;
+                }
+            } catch (e) {
+                console.warn("AllOrigins Proxy skipped...", e);
+            }
+
             return null;
         }
 
-        function updateBadge(text, icon, colorClass) {
-            const badge = document.getElementById('detected-service');
-            badge.className = `flex items-center gap-1.5 font-medium ${colorClass}`;
-            badge.innerHTML = `<i class="${icon} text-xs"></i> ${text}`;
-        }
-
-        function selectService(serviceId, clearManual = true) {
-            currentService = serviceId;
-            resetServiceHighlight();
-            
-            const btn = document.getElementById(`service-${serviceId}`);
-            if (btn) {
-                btn.classList.add('border-sky-500', 'bg-sky-950/50');
-            }
-
-            const iconMap = {
-                tiktok: 'fa-brands fa-tiktok text-slate-200',
-                instagram: 'fa-brands fa-instagram text-slate-200',
-                ytmp4: 'fa-brands fa-youtube text-red-500',
-                ytmp3: 'fa-solid fa-music text-slate-200',
-                ytshort: 'fa-solid fa-bolt text-red-500',
-                spotify: 'fa-brands fa-spotify text-emerald-400',
-                pinterest: 'fa-brands fa-pinterest text-slate-200',
-                capcut: 'fa-solid fa-scissors text-slate-200',
-                terabox: 'fa-solid fa-box-archive text-slate-200'
-            };
-
-            const platformIcon = document.getElementById('platform-icon');
-            if (iconMap[serviceId]) {
-                platformIcon.className = `${iconMap[serviceId]} text-base`;
-            }
-        }
-
-        function resetServiceHighlight() {
-            document.querySelectorAll('.service-card').forEach(card => {
-                card.classList.remove('border-sky-500', 'bg-sky-950/50');
-            });
-        }
-
-        function clearInput() {
-            document.getElementById('media-url').value = '';
-            document.getElementById('clear-btn').classList.add('hidden');
-            resetServiceHighlight();
-            updateBadge("Deteksi Otomatis Active", "fa-wand-magic-sparkles", "text-sky-400");
-        }
-
-        async function pasteClipboard() {
-            try {
-                const text = await navigator.clipboard.readText();
-                document.getElementById('media-url').value = text;
-                handleUrlInput();
-                showToast("Tautan berhasil ditempel!", "success");
-            } catch (err) {
-                showToast("Tempel manual pada kolom teks.", "info");
-            }
-        }
-
         async function fetchMediaWithFallback(service, urlInput) {
-            // 1. Primary Endpoint
+            // ENGINE 0: Vercel Serverless API Proxy
             try {
-                const targetEndpoint = `${ENDPOINTS[service]}?key=${DEFAULT_API_KEY}&url=${encodeURIComponent(urlInput)}`;
-                const directRes = await fetch(targetEndpoint);
-                if (directRes.ok) {
-                    const data = await directRes.json();
+                const vercelRes = await fetch(`/api/download?service=${service}&url=${encodeURIComponent(urlInput)}`);
+                if (vercelRes.ok) {
+                    const vData = await vercelRes.json();
+                    const parsed = extractMediaFields(vData, service);
+                    if (parsed && parsed.mediaUrl) return parsed;
+                }
+            } catch (e) {
+                console.warn("Vercel serverless proxy endpoint not detected, switching to direct engines...", e);
+            }
+
+            // ENGINE 1: TikTok Dedicated Engine (TikWM Direct)
+            if (service === 'tiktok') {
+                try {
+                    const tikwmData = await fetchWithCorsProxy(`https://www.tikwm.com/api/?url=${encodeURIComponent(urlInput)}`);
+                    if (tikwmData && tikwmData.code === 0 && tikwmData.data) {
+                        return {
+                            mediaUrl: tikwmData.data.play || tikwmData.data.wmplay,
+                            audioUrl: tikwmData.data.music || "",
+                            title: tikwmData.data.title || "TikTok Video No Watermark",
+                            author: tikwmData.data.author?.nickname || "@tiktok_user",
+                            thumbnail: tikwmData.data.cover || tikwmData.data.origin_cover || ""
+                        };
+                    }
+                } catch (e) {
+                    console.warn("TikWM Engine failed...", e);
+                }
+            }
+
+            // ENGINE 2: Universal Cobalt Engine
+            const cobaltInstances = [
+                "https://api.cobalt.tools/",
+                "https://cobalt-api.kwippy.com/",
+                "https://co.wuk.sh/"
+            ];
+
+            for (const instance of cobaltInstances) {
+                try {
+                    const isAudio = (service === 'ytmp3' || service === 'spotify');
+                    const res = await fetch(instance, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            url: urlInput,
+                            videoQuality: "720",
+                            downloadMode: isAudio ? "audio" : "auto"
+                        })
+                    });
+
+                    if (res.ok) {
+                        const cobaltRes = await res.json();
+                        let targetUrl = cobaltRes.url;
+                        if (!targetUrl && cobaltRes.picker && cobaltRes.picker.length > 0) {
+                            targetUrl = cobaltRes.picker[0].url;
+                        }
+
+                        if (targetUrl) {
+                            const ytId = extractYouTubeId(urlInput);
+                            return {
+                                mediaUrl: targetUrl,
+                                audioUrl: isAudio ? targetUrl : "",
+                                title: cobaltRes.filename || `PidzStore Media (${service.toUpperCase()})`,
+                                author: "PidzStore Engine",
+                                thumbnail: ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : ""
+                            };
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Cobalt instance ${instance} skipped...`, e);
+                }
+            }
+
+            // ENGINE 3: Primary Hyerls Endpoint
+            try {
+                const primaryUrl = `${ENDPOINTS[service]}?key=${DEFAULT_API_KEY}&url=${encodeURIComponent(urlInput)}`;
+                const data = await fetchWithCorsProxy(primaryUrl);
+                if (data) {
                     const parsed = extractMediaFields(data, service);
                     if (parsed && parsed.mediaUrl) return parsed;
                 }
             } catch (e) {
-                console.warn("Primary API failed, switching to backup...", e);
-            }
-
-            // 2. TikTok Specific Fallbacks (TikWM Engine)
-            if (service === 'tiktok') {
-                try {
-                    const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(urlInput)}`);
-                    const data = await res.json();
-                    if (data && data.code === 0 && data.data) {
-                        return {
-                            mediaUrl: data.data.play || data.data.wmplay,
-                            audioUrl: data.data.music || "",
-                            title: data.data.title || "TikTok Video No Watermark",
-                            author: data.data.author?.nickname || "@tiktok_user",
-                            thumbnail: data.data.cover || data.data.origin_cover || ""
-                        };
-                    }
-                } catch (e) {
-                    console.warn("TikWM Fallback failed:", e);
-                }
-            }
-
-            // 3. Instagram Specific Fallbacks (VKR/Snap API Engine)
-            if (service === 'instagram') {
-                try {
-                    const res = await fetch(`https://api.vkrdown.com/v4/ig?url=${encodeURIComponent(urlInput)}`);
-                    const data = await res.json();
-                    if (data && data.data && data.data.length > 0) {
-                        const item = data.data[0];
-                        return {
-                            mediaUrl: item.url || item.download_url || item.video_url,
-                            audioUrl: "",
-                            title: data.title || "Instagram Post / Reel HD",
-                            author: data.author || "@instagram",
-                            thumbnail: item.thumbnail || item.thumb || ""
-                        };
-                    }
-                } catch (e) {
-                    console.warn("VKR Instagram Fallback failed:", e);
-                }
-            }
-
-            // 4. YouTube MP4 / MP3 / Shorts Fallbacks
-            if (service === 'ytmp4' || service === 'ytshort' || service === 'ytmp3') {
-                const ytId = extractYouTubeId(urlInput);
-                if (ytId) {
-                    try {
-                        const res = await fetch(`https://api.vkrdown.com/v4/youtube?url=${encodeURIComponent(urlInput)}`);
-                        const data = await res.json();
-                        if (data && data.data) {
-                            const link = service === 'ytmp3' ? (data.data.audio || data.data.mp3) : (data.data.video || data.data.mp4 || data.data.download);
-                            if (link) {
-                                return {
-                                    mediaUrl: link,
-                                    audioUrl: data.data.audio || "",
-                                    title: data.title || `YouTube Media (${ytId})`,
-                                    author: data.author || "YouTube Channel",
-                                    thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
-                                };
-                            }
-                        }
-                    } catch (e) {
-                        console.warn("YT Fallback failed:", e);
-                    }
-                }
+                console.warn("Primary Hyerls API failed...", e);
             }
 
             return null;
@@ -627,7 +688,7 @@
         async function startDownload() {
             const urlInput = document.getElementById('media-url').value.trim();
             if (!urlInput) {
-                showToast("Silakan masukkan URL media!", "warning");
+                showToast("Silakan masukkan URL media terlebih dahulu!", "warning");
                 return;
             }
 
@@ -651,12 +712,12 @@
                     displayValidatedResult(mediaData, currentService, urlInput);
                     showToast("Media berhasil diproses oleh PidzStore Engine!", "success");
                 } else {
-                    throw new Error("Tautan media tidak dapat diurai oleh semua server.");
+                    throw new Error("Gagal mengurai tautan media.");
                 }
 
             } catch (error) {
                 console.error("PidzStore Engine Error:", error);
-                showToast("Gagal memproses media. Server sibuk atau akun privat.", "error");
+                showToast("Gagal memproses media. Server sibuk atau tautan privat.", "error");
             } finally {
                 loadingState.classList.add('hidden');
                 downloadBtn.disabled = false;
@@ -677,7 +738,6 @@
             const videoPreview = document.getElementById('video-preview');
             const audioPreview = document.getElementById('audio-preview');
 
-            // Reset States
             videoPreview.classList.add('hidden');
             audioPreview.classList.add('hidden');
             playerContainer.classList.add('hidden');
@@ -689,18 +749,15 @@
             let title = data.title || `PidzStore ${service.toUpperCase()} Media`;
             let author = data.author || `PidzStore Engine`;
 
-            // Fallback YT Extraction
             const ytId = extractYouTubeId(originalUrl);
             if (ytId && !data.thumbnail) {
                 data.thumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
             }
 
-            // Render Text
             titleEl.textContent = title;
             authorEl.querySelector('span').textContent = author;
             platformTag.textContent = service.toUpperCase();
 
-            // Render Thumbnail
             if (data.thumbnail) {
                 thumbImg.src = data.thumbnail;
                 thumbImg.onload = () => {
@@ -716,7 +773,6 @@
                 thumbPlaceholder.classList.remove('hidden');
             }
 
-            // Configure Download Buttons
             videoDlBtn.href = data.mediaUrl;
             videoDlBtn.setAttribute('download', 'PidzStore_Media.mp4');
 
@@ -726,7 +782,6 @@
                 videoDlBtn.innerHTML = `<i class="fa-solid fa-download"></i> Unduh Video MP4 HD`;
             }
 
-            // Alternative Link Button for YT MP4 Direct Download
             if (service === 'ytmp4' || service === 'ytshort') {
                 altDlBtn.href = data.mediaUrl;
                 altDlBtn.classList.remove('hidden');
@@ -737,7 +792,6 @@
                 audioDlBtn.classList.remove('hidden');
             }
 
-            // Handle Video Preview for supported direct mp4 sources
             if (data.mediaUrl && (service === 'tiktok' || service === 'instagram' || service === 'capcut')) {
                 videoPreview.src = data.mediaUrl;
                 videoPreview.classList.remove('hidden');
@@ -751,7 +805,6 @@
             resultSection.classList.remove('hidden');
             resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-            // Save History
             saveToHistory({
                 service,
                 title,
@@ -766,7 +819,7 @@
                 return;
             }
             try {
-                showToast("Mulai mengunduh file media...", "info");
+                showToast("Mulai mengunduh media...", "info");
                 const response = await fetch(lastResultData.mediaUrl);
                 const blob = await response.blob();
                 const blobUrl = URL.createObjectURL(blob);
@@ -779,7 +832,6 @@
                 URL.revokeObjectURL(blobUrl);
                 showToast("Unduhan berhasil dimulai!", "success");
             } catch (e) {
-                // If CORS blocks blob fetch, fallback to standard link download
                 window.open(lastResultData.mediaUrl, '_blank');
             }
         }
@@ -802,6 +854,8 @@
             const history = JSON.parse(localStorage.getItem('pidz_download_history') || '[]');
             const historyList = document.getElementById('history-list');
             
+            if (!historyList) return;
+
             if (history.length === 0) {
                 historyList.innerHTML = `<div class="col-span-full tech-card p-4 rounded-xl text-center text-slate-500 text-xs">Belum ada riwayat unduhan di PidzStore.</div>`;
                 return;
@@ -829,6 +883,7 @@
 
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             
             const iconMap = {
