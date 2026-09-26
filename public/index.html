@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PidzStore Media Downloader - Multi-Platform</title>
+    <title>PidzStore Media Downloader - Multi-Platform Engine</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -328,9 +328,14 @@
                                 <i class="fa-solid fa-download"></i> Unduh Video MP4
                             </a>
 
+                            <!-- Force Blob Download Option -->
+                            <button id="btn-force-dl" onclick="triggerDirectDownload()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2 px-4 rounded-lg text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-file-arrow-down"></i> Unduh Langsung ke Perangkat
+                            </button>
+
                             <!-- Alternative Direct Link Button (For YT MP4 Fallback) -->
                             <a id="btn-dl-alt" href="#" target="_blank" rel="noopener noreferrer" class="hidden bg-slate-800 hover:bg-slate-700 w-full py-2 px-4 rounded-lg text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition border border-slate-700">
-                                <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i> Buka Tautan Unduhan Langsung
+                                <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i> Buka Tautan Unduhan Server 2
                             </a>
 
                             <!-- Audio Download Button -->
@@ -340,7 +345,7 @@
 
                             <!-- Copy Direct Link Button -->
                             <button onclick="copyDirectLink()" class="w-full py-1.5 px-3 text-slate-400 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition">
-                                <i class="fa-regular fa-copy"></i> Salin Link Media
+                                <i class="fa-regular fa-copy"></i> Salin Link Media Direct
                             </button>
                         </div>
                     </div>
@@ -380,7 +385,7 @@
     <script>
         const DEFAULT_API_KEY = "PREMIUM04JFHDUDJAISKXNRNDIAKNX";
         let currentService = null;
-        let lastResultUrl = "";
+        let lastResultData = null;
 
         const ENDPOINTS = {
             spotify: "https://hyerls.my.id/api/spotify.php",
@@ -419,7 +424,6 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Auto-detect Platform
         function handleUrlInput() {
             const urlInput = document.getElementById('media-url').value.trim();
             const clearBtn = document.getElementById('clear-btn');
@@ -512,6 +516,114 @@
             }
         }
 
+        async function fetchMediaWithFallback(service, urlInput) {
+            // 1. Primary Endpoint
+            try {
+                const targetEndpoint = `${ENDPOINTS[service]}?key=${DEFAULT_API_KEY}&url=${encodeURIComponent(urlInput)}`;
+                const directRes = await fetch(targetEndpoint);
+                if (directRes.ok) {
+                    const data = await directRes.json();
+                    const parsed = extractMediaFields(data, service);
+                    if (parsed && parsed.mediaUrl) return parsed;
+                }
+            } catch (e) {
+                console.warn("Primary API failed, switching to backup...", e);
+            }
+
+            // 2. TikTok Specific Fallbacks (TikWM Engine)
+            if (service === 'tiktok') {
+                try {
+                    const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(urlInput)}`);
+                    const data = await res.json();
+                    if (data && data.code === 0 && data.data) {
+                        return {
+                            mediaUrl: data.data.play || data.data.wmplay,
+                            audioUrl: data.data.music || "",
+                            title: data.data.title || "TikTok Video No Watermark",
+                            author: data.data.author?.nickname || "@tiktok_user",
+                            thumbnail: data.data.cover || data.data.origin_cover || ""
+                        };
+                    }
+                } catch (e) {
+                    console.warn("TikWM Fallback failed:", e);
+                }
+            }
+
+            // 3. Instagram Specific Fallbacks (VKR/Snap API Engine)
+            if (service === 'instagram') {
+                try {
+                    const res = await fetch(`https://api.vkrdown.com/v4/ig?url=${encodeURIComponent(urlInput)}`);
+                    const data = await res.json();
+                    if (data && data.data && data.data.length > 0) {
+                        const item = data.data[0];
+                        return {
+                            mediaUrl: item.url || item.download_url || item.video_url,
+                            audioUrl: "",
+                            title: data.title || "Instagram Post / Reel HD",
+                            author: data.author || "@instagram",
+                            thumbnail: item.thumbnail || item.thumb || ""
+                        };
+                    }
+                } catch (e) {
+                    console.warn("VKR Instagram Fallback failed:", e);
+                }
+            }
+
+            // 4. YouTube MP4 / MP3 / Shorts Fallbacks
+            if (service === 'ytmp4' || service === 'ytshort' || service === 'ytmp3') {
+                const ytId = extractYouTubeId(urlInput);
+                if (ytId) {
+                    try {
+                        const res = await fetch(`https://api.vkrdown.com/v4/youtube?url=${encodeURIComponent(urlInput)}`);
+                        const data = await res.json();
+                        if (data && data.data) {
+                            const link = service === 'ytmp3' ? (data.data.audio || data.data.mp3) : (data.data.video || data.data.mp4 || data.data.download);
+                            if (link) {
+                                return {
+                                    mediaUrl: link,
+                                    audioUrl: data.data.audio || "",
+                                    title: data.title || `YouTube Media (${ytId})`,
+                                    author: data.author || "YouTube Channel",
+                                    thumbnail: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+                                };
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("YT Fallback failed:", e);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function extractMediaFields(data, service) {
+            if (!data) return null;
+            const resObj = data.result || data.data || data;
+
+            let mediaUrl = "";
+            let audioUrl = "";
+            let title = "";
+            let author = "";
+            let thumbnail = "";
+
+            if (typeof resObj === 'string' && resObj.startsWith('http')) {
+                mediaUrl = resObj;
+            } else if (resObj && typeof resObj === 'object') {
+                mediaUrl = resObj.dl_link || resObj.url || resObj.download || resObj.link || resObj.video || resObj.nowatermark || resObj.mp4 || resObj.hd_url || (Array.isArray(resObj) && resObj[0]?.url ? resObj[0].url : "");
+                audioUrl = resObj.audio || resObj.mp3 || resObj.music || resObj.audio_url || "";
+                title = resObj.title || resObj.caption || resObj.desc || resObj.name || "";
+                author = resObj.author?.nickname || resObj.author || resObj.uploader || resObj.channel || resObj.artist || "";
+                thumbnail = resObj.thumbnail || resObj.thumb || resObj.cover || resObj.image || resObj.img || "";
+            }
+
+            if (!mediaUrl || !mediaUrl.startsWith('http')) {
+                return null;
+            }
+
+            return { mediaUrl, audioUrl, title, author, thumbnail };
+        }
+
         async function startDownload() {
             const urlInput = document.getElementById('media-url').value.trim();
             if (!urlInput) {
@@ -533,42 +645,25 @@
             downloadBtn.disabled = true;
 
             try {
-                let responseData = null;
+                const mediaData = await fetchMediaWithFallback(currentService, urlInput);
 
-                // Priority 1: Vercel Serverless Proxy
-                try {
-                    const serverlessRes = await fetch(`/api/download?service=${currentService}&url=${encodeURIComponent(urlInput)}`);
-                    if (serverlessRes.ok) {
-                        responseData = await serverlessRes.json();
-                    }
-                } catch (e) {
-                    console.log("Serverless proxy fallback to direct endpoint...");
-                }
-
-                // Priority 2: Direct API Call
-                if (!responseData) {
-                    const targetEndpoint = `${ENDPOINTS[currentService]}?key=${DEFAULT_API_KEY}&url=${encodeURIComponent(urlInput)}`;
-                    const directRes = await fetch(targetEndpoint);
-                    responseData = await directRes.json();
-                }
-
-                if (responseData) {
-                    parseAndDisplayResult(responseData, currentService, urlInput);
-                    showToast("Media berhasil diproses oleh PidzStore!", "success");
+                if (mediaData && mediaData.mediaUrl) {
+                    displayValidatedResult(mediaData, currentService, urlInput);
+                    showToast("Media berhasil diproses oleh PidzStore Engine!", "success");
                 } else {
-                    throw new Error("Respon tidak valid dari API.");
+                    throw new Error("Tautan media tidak dapat diurai oleh semua server.");
                 }
 
             } catch (error) {
                 console.error("PidzStore Engine Error:", error);
-                showToast("Gagal memproses media. Periksa koneksi/tautan.", "error");
+                showToast("Gagal memproses media. Server sibuk atau akun privat.", "error");
             } finally {
                 loadingState.classList.add('hidden');
                 downloadBtn.disabled = false;
             }
         }
 
-        function parseAndDisplayResult(data, service, originalUrl) {
+        function displayValidatedResult(data, service, originalUrl) {
             const resultSection = document.getElementById('result-section');
             const thumbImg = document.getElementById('media-thumb');
             const thumbPlaceholder = document.getElementById('thumb-placeholder');
@@ -589,44 +684,16 @@
             audioDlBtn.classList.add('hidden');
             altDlBtn.classList.add('hidden');
 
-            let mediaUrl = "";
-            let audioUrl = "";
-            let title = "";
-            let author = "";
-            let thumbnail = "";
+            lastResultData = data;
 
-            // Unwrap API Structure
-            const resObj = data.result || data.data || data;
-
-            if (typeof resObj === 'string') {
-                mediaUrl = resObj;
-            } else if (resObj && typeof resObj === 'object') {
-                mediaUrl = resObj.dl_link || resObj.url || resObj.download || resObj.link || resObj.video || resObj.nowatermark || resObj.mp4 || resObj.hd_url || (Array.isArray(resObj) ? resObj[0] : "");
-                audioUrl = resObj.audio || resObj.mp3 || resObj.music || resObj.audio_url || "";
-                title = resObj.title || resObj.caption || resObj.desc || resObj.name || "";
-                author = resObj.author?.nickname || resObj.author || resObj.uploader || resObj.channel || resObj.artist || "";
-                thumbnail = resObj.thumbnail || resObj.thumb || resObj.cover || resObj.image || resObj.img || "";
-            }
+            let title = data.title || `PidzStore ${service.toUpperCase()} Media`;
+            let author = data.author || `PidzStore Engine`;
 
             // Fallback YT Extraction
             const ytId = extractYouTubeId(originalUrl);
-            if (ytId) {
-                if (!thumbnail) {
-                    thumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-                }
-                if (!title || title === "Media Result") {
-                    title = resObj?.title || `YouTube Media (${ytId})`;
-                }
-                if (!author) {
-                    author = resObj?.channel || "YouTube";
-                }
+            if (ytId && !data.thumbnail) {
+                data.thumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
             }
-
-            if (!title) title = `PidzStore ${service.toUpperCase()} Media`;
-            if (!author) author = `PidzStore Engine`;
-            if (!mediaUrl && audioUrl) mediaUrl = audioUrl;
-
-            lastResultUrl = mediaUrl || originalUrl;
 
             // Render Text
             titleEl.textContent = title;
@@ -634,8 +701,8 @@
             platformTag.textContent = service.toUpperCase();
 
             // Render Thumbnail
-            if (thumbnail) {
-                thumbImg.src = thumbnail;
+            if (data.thumbnail) {
+                thumbImg.src = data.thumbnail;
                 thumbImg.onload = () => {
                     thumbImg.classList.remove('hidden');
                     thumbPlaceholder.classList.add('hidden');
@@ -650,33 +717,33 @@
             }
 
             // Configure Download Buttons
-            videoDlBtn.href = mediaUrl;
-            videoDlBtn.setAttribute('download', '');
+            videoDlBtn.href = data.mediaUrl;
+            videoDlBtn.setAttribute('download', 'PidzStore_Media.mp4');
 
             if (service === 'spotify' || service === 'ytmp3') {
                 videoDlBtn.innerHTML = `<i class="fa-solid fa-music"></i> Unduh Lagu MP3`;
             } else {
-                videoDlBtn.innerHTML = `<i class="fa-solid fa-download"></i> Unduh Video MP4`;
+                videoDlBtn.innerHTML = `<i class="fa-solid fa-download"></i> Unduh Video MP4 HD`;
             }
 
             // Alternative Link Button for YT MP4 Direct Download
             if (service === 'ytmp4' || service === 'ytshort') {
-                altDlBtn.href = mediaUrl;
+                altDlBtn.href = data.mediaUrl;
                 altDlBtn.classList.remove('hidden');
             }
 
-            if (audioUrl && service !== 'ytmp3' && service !== 'spotify') {
-                audioDlBtn.href = audioUrl;
+            if (data.audioUrl && service !== 'ytmp3' && service !== 'spotify') {
+                audioDlBtn.href = data.audioUrl;
                 audioDlBtn.classList.remove('hidden');
             }
 
             // Handle Video Preview for supported direct mp4 sources
-            if (mediaUrl && (service === 'tiktok' || service === 'instagram' || service === 'capcut')) {
-                videoPreview.src = mediaUrl;
+            if (data.mediaUrl && (service === 'tiktok' || service === 'instagram' || service === 'capcut')) {
+                videoPreview.src = data.mediaUrl;
                 videoPreview.classList.remove('hidden');
                 playerContainer.classList.remove('hidden');
-            } else if (mediaUrl && (service === 'spotify' || service === 'ytmp3')) {
-                audioPreview.src = mediaUrl;
+            } else if (data.mediaUrl && (service === 'spotify' || service === 'ytmp3')) {
+                audioPreview.src = data.mediaUrl;
                 audioPreview.classList.remove('hidden');
                 playerContainer.classList.remove('hidden');
             }
@@ -688,15 +755,39 @@
             saveToHistory({
                 service,
                 title,
-                url: mediaUrl,
+                url: data.mediaUrl,
                 date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             });
         }
 
+        async function triggerDirectDownload() {
+            if (!lastResultData || !lastResultData.mediaUrl) {
+                showToast("Tautan tidak tersedia.", "error");
+                return;
+            }
+            try {
+                showToast("Mulai mengunduh file media...", "info");
+                const response = await fetch(lastResultData.mediaUrl);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `${lastResultData.title || 'PidzStore_Media'}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(blobUrl);
+                showToast("Unduhan berhasil dimulai!", "success");
+            } catch (e) {
+                // If CORS blocks blob fetch, fallback to standard link download
+                window.open(lastResultData.mediaUrl, '_blank');
+            }
+        }
+
         function copyDirectLink() {
-            if (!lastResultUrl) return;
-            navigator.clipboard.writeText(lastResultUrl);
-            showToast("Link media berhasil disalin!", "info");
+            if (!lastResultData || !lastResultData.mediaUrl) return;
+            navigator.clipboard.writeText(lastResultData.mediaUrl);
+            showToast("Link media direct berhasil disalin!", "info");
         }
 
         function saveToHistory(item) {
