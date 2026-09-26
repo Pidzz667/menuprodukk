@@ -146,7 +146,7 @@
             </div>
 
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-sans text-white mb-1">
-                PidzStore <span class="text-sky-400">Media Engine v3.1</span>
+                PidzStore <span class="text-sky-400">Media Engine v3.5</span>
             </h1>
             <p class="text-slate-400 text-xs sm:text-sm font-medium tracking-wide mb-8">
                 Universal Multi-Threaded Media Downloader
@@ -187,7 +187,7 @@
         <!-- HERO SECTION -->
         <section class="text-center my-4 sm:my-8">
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-950/60 border border-sky-500/30 text-sky-300 text-xs font-semibold mb-4 backdrop-blur-md">
-                <i class="fa-solid fa-bolt text-amber-400"></i> Multi-Proxy CORS Bypass & Timeout Protection Active
+                <i class="fa-solid fa-bolt text-amber-400"></i> Multi-Engine Failover & Cobalt Proxy Active
             </div>
             <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
                 Unduh Video HD & Audio <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400">Tanpa Watermark</span>
@@ -233,7 +233,7 @@
                     <span id="detected-service" class="flex items-center gap-2 font-medium text-sky-400">
                         <i class="fa-solid fa-radar text-xs animate-spin"></i> Mode Deteksi Otomatis Aktif
                     </span>
-                    <span class="text-slate-500 text-[11px] font-mono">Engine: PidzStore Ultra v3.1</span>
+                    <span class="text-slate-500 text-[11px] font-mono">Engine: PidzStore Multi-Engine v3.5</span>
                 </div>
             </div>
         </section>
@@ -329,7 +329,7 @@
                         <i class="fa-solid fa-triangle-exclamation text-rose-400 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-white font-sans" id="error-title">Gagal Mengunduh Media</h3>
+                        <h3 class="text-base font-bold text-white font-sans" id="error-title">Gagal Mengekstrak Media</h3>
                         <p id="error-msg" class="text-xs text-rose-300 mt-1">Tautan tidak valid atau media diprivat oleh pemiliknya.</p>
                     </div>
                 </div>
@@ -524,6 +524,14 @@
         }
         animateParticles();
 
+        // COBALT API INSTANCES
+        const COBALT_INSTANCES = [
+            'https://api.cobalt.tools',
+            'https://cobalt-api.kwippy.org',
+            'https://cobalt.meo.ws',
+            'https://co.wuk.sh'
+        ];
+
         // CORS PROXIES LIST
         const CORS_PROXIES = [
             'https://corsproxy.io/?',
@@ -532,7 +540,7 @@
         ];
 
         // Fetch with strict timeout helper to prevent stuck loading
-        async function fetchWithTimeout(resource, options = {}, timeout = 7000) {
+        async function fetchWithTimeout(resource, options = {}, timeout = 6000) {
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
             try {
@@ -572,7 +580,7 @@
 
             setTimeout(() => {
                 if (introBar) introBar.style.width = '70%';
-                if (introText) introText.textContent = "Menghubungkan Engine Proxy CORS...";
+                if (introText) introText.textContent = "Menghubungkan Engine Proxy CORS & Cobalt Nodes...";
             }, 300);
 
             setTimeout(() => {
@@ -700,6 +708,53 @@
             document.getElementById('error-modal').classList.add('hidden');
         }
 
+        // COBALT ENGINE UNIVERSAL FALLBACK
+        async function extractCobaltEngine(url, isAudioOnly = false) {
+            for (const instance of COBALT_INSTANCES) {
+                try {
+                    logConsole(`Mencoba Cobalt Server Node: ${instance.split('//')[1]}...`);
+                    const res = await fetchWithTimeout(`${instance}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            url: url,
+                            videoQuality: 'max',
+                            audioFormat: 'mp3',
+                            downloadMode: isAudioOnly ? 'audio' : 'auto'
+                        })
+                    }, 5500);
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.status === 'tunnel' || data.status === 'redirect') {
+                            return {
+                                mediaUrl: data.url,
+                                audioUrl: isAudioOnly ? data.url : "",
+                                title: data.filename || "Extracted Content Media",
+                                author: "@cobalt_engine",
+                                thumbnail: ""
+                            };
+                        } else if (data.status === 'picker' && data.picker && data.picker.length > 0) {
+                            const item = data.picker[0];
+                            return {
+                                mediaUrl: item.url,
+                                audioUrl: "",
+                                title: data.filename || "Gallery Media",
+                                author: "@cobalt_engine",
+                                thumbnail: item.thumb || item.url
+                            };
+                        }
+                    }
+                } catch (e) {
+                    logConsole(`Node ${instance.split('//')[1]} offline / timeout.`);
+                }
+            }
+            return null;
+        }
+
         async function startDownloadProcess() {
             const urlInput = document.getElementById('media-url').value.trim();
             if (!urlInput) {
@@ -730,20 +785,21 @@
                 // Step 1
                 if (procBar) procBar.style.width = '25%';
                 if (procStepTitle) procStepTitle.textContent = "Langkah 1/4: Menganalisis URL Target...";
-                logConsole(`Memeriksa URL: ${urlInput.substring(0, 45)}...`);
-                await new Promise(r => setTimeout(r, 200));
+                logConsole(`Memeriksa Target: ${urlInput.substring(0, 45)}...`);
+                await new Promise(r => setTimeout(r, 150));
 
                 // Step 2
                 if (procBar) procBar.style.width = '50%';
-                if (procStepTitle) procStepTitle.textContent = "Langkah 2/4: Mengaktifkan Multi-Proxy Engine...";
-                logConsole(`Menghubungkan ke API server PidzStore...`);
-                await new Promise(r => setTimeout(r, 200));
+                if (procStepTitle) procStepTitle.textContent = "Langkah 2/4: Memilih Server Engine PidzStore...";
+                logConsole(`Menghubungkan ke Multi-Thread Server Nodes...`);
+                await new Promise(r => setTimeout(r, 150));
 
                 // Step 3
                 if (procBar) procBar.style.width = '75%';
-                if (procStepTitle) procStepTitle.textContent = "Langkah 3/4: Mengekstrak Stream Media...";
+                if (procStepTitle) procStepTitle.textContent = "Langkah 3/4: Mengekstrak Stream Direct HD...";
                 logConsole(`Proses ekstraksi direct URL...`, true);
 
+                // Priority 1: Primary Dedicated Engine
                 if (currentService === 'tiktok') {
                     mediaData = await extractTikTok(urlInput);
                 } else if (currentService === 'ytmp4' || currentService === 'ytmp3' || currentService === 'ytshort') {
@@ -756,21 +812,31 @@
                     mediaData = await extractCapCut(urlInput);
                 } else if (currentService === 'spotify') {
                     mediaData = await extractSpotify(urlInput);
-                } else {
+                }
+
+                // Priority 2: Cobalt Engine Fallback
+                if (!mediaData || !mediaData.mediaUrl) {
+                    logConsole("Mengaktifkan Fallback Engine (Cobalt Nodes)...", true);
+                    mediaData = await extractCobaltEngine(urlInput, currentService === 'ytmp3' || currentService === 'spotify');
+                }
+
+                // Priority 3: Universal OpenGraph Scraper Backup
+                if (!mediaData || !mediaData.mediaUrl) {
+                    logConsole("Mengaktifkan Backup Meta Scraper...");
                     mediaData = await extractUniversalOpenGraph(urlInput);
                 }
+
             } catch (err) {
                 console.error("Extraction error:", err);
                 logConsole(`Terjadi kesalahan jaringan: ${err.message || 'Timeout'}`);
             } finally {
-                // Ensure processing modal hides no matter what
                 procModal.classList.add('hidden');
             }
 
             if (!mediaData || !mediaData.mediaUrl) {
                 showErrorModal(
                     "Gagal Mengekstrak Media", 
-                    "Sistem tidak dapat mengambil file video/audio dari tautan tersebut atau server sumber sedang membatasi akses. Silakan coba tautan publik lain."
+                    "Sistem telah mencoba 4 server cadangan namun tidak dapat mengambil file media dari tautan tersebut (mungkin diprivat atau dibatasi oleh server asal). Silakan coba tautan publik lain."
                 );
                 showToast("Ekstraksi gagal atau dibatasi.", "error");
                 return;
@@ -782,10 +848,28 @@
 
         // TIKTOK ENGINE
         async function extractTikTok(url) {
-            // API 1: TiklyDown Public API
+            // API 1: TikWM Direct
+            try {
+                logConsole("Menghubungkan ke TikWM Direct Engine...");
+                const res = await fetchWithTimeout(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`, {}, 5000);
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json && json.data) {
+                        return {
+                            mediaUrl: json.data.play || json.data.wmplay,
+                            audioUrl: json.data.music || "",
+                            title: json.data.title || "TikTok Content",
+                            author: `@${json.data.author?.unique_id || 'creator'}`,
+                            thumbnail: json.data.cover || json.data.origin_cover || ""
+                        };
+                    }
+                }
+            } catch (e) {}
+
+            // API 2: TiklyDown Public API
             try {
                 logConsole("Menghubungkan ke TiklyDown Engine...");
-                const res = await fetchWithTimeout(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`, {}, 6000);
+                const res = await fetchWithTimeout(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`, {}, 5000);
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.video) {
@@ -798,29 +882,8 @@
                         };
                     }
                 }
-            } catch (e) { logConsole("TiklyDown timeout/error, mencoba fallback proxy..."); }
+            } catch (e) {}
 
-            // API 2: TikWM Proxy
-            for (const proxy of CORS_PROXIES) {
-                try {
-                    logConsole("Menghubungkan ke TikWM Engine via Proxy...");
-                    const apiUrl = `${proxy}${encodeURIComponent(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`)}`;
-                    const res = await fetchWithTimeout(apiUrl, {}, 6000);
-                    if (res.ok) {
-                        const json = await res.json();
-                        const data = json.data || (typeof json === 'string' ? JSON.parse(json).data : null);
-                        if (data && (data.play || data.wmplay)) {
-                            return {
-                                mediaUrl: data.play || data.wmplay,
-                                audioUrl: data.music || "",
-                                title: data.title || "TikTok Content",
-                                author: `@${data.author?.unique_id || 'creator'}`,
-                                thumbnail: data.cover || data.origin_cover || ""
-                            };
-                        }
-                    }
-                } catch (e) {}
-            }
             return null;
         }
 
@@ -835,37 +898,43 @@
                 return null;
             }
 
-            const PIPED_INSTANCES = [
-                'https://pipedapi.kavin.rocks',
-                'https://api.piped.video',
-                'https://pipedapi.mha.fi'
+            // Invidious API Nodes
+            const INVIDIOUS_INSTANCES = [
+                'https://inv.tux.pizza',
+                'https://invidious.nerdvpn.de',
+                'https://invidious.drgns.space',
+                'https://vid.puffyan.us'
             ];
 
-            for (const inst of PIPED_INSTANCES) {
+            for (const inst of INVIDIOUS_INSTANCES) {
                 try {
-                    logConsole(`Menghubungkan ke YouTube Stream (${inst.split('//')[1]})...`);
-                    const res = await fetchWithTimeout(`${inst}/streams/${videoId}`, {}, 5000);
+                    logConsole(`Menghubungkan ke Invidious Engine (${inst.split('//')[1]})...`);
+                    const res = await fetchWithTimeout(`${inst}/api/v1/videos/${videoId}`, {}, 5000);
                     if (res.ok) {
                         const data = await res.json();
                         if (data) {
-                            let streamUrl = "";
-                            if (isAudioOnly) {
-                                const audioStream = data.audioStreams?.sort((a,b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
-                                streamUrl = audioStream?.url || "";
-                            } else {
-                                const videoStream = data.videoStreams?.find(v => v.mimeType?.includes('mp4') && v.hasAudio) ||
-                                                    data.videoStreams?.sort((a,b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
-                                streamUrl = videoStream?.url || "";
-                            }
-
-                            if (streamUrl) {
-                                return {
-                                    mediaUrl: streamUrl,
-                                    audioUrl: isAudioOnly ? streamUrl : (data.audioStreams?.[0]?.url || ""),
-                                    title: data.title || "YouTube Video",
-                                    author: data.uploader || "YouTube Channel",
-                                    thumbnail: data.thumbnailUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
-                                };
+                            if (isAudioOnly && data.adaptiveFormats) {
+                                const audio = data.adaptiveFormats.find(f => f.type?.includes('audio')) || data.adaptiveFormats[0];
+                                if (audio?.url) {
+                                    return {
+                                        mediaUrl: audio.url,
+                                        audioUrl: audio.url,
+                                        title: data.title || "YouTube Audio",
+                                        author: data.author || "YouTube Creator",
+                                        thumbnail: data.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+                                    };
+                                }
+                            } else if (data.formatStreams) {
+                                const video = data.formatStreams.reverse()[0];
+                                if (video?.url) {
+                                    return {
+                                        mediaUrl: video.url,
+                                        audioUrl: "",
+                                        title: data.title || "YouTube Video",
+                                        author: data.author || "YouTube Creator",
+                                        thumbnail: data.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+                                    };
+                                }
                             }
                         }
                     }
@@ -880,7 +949,7 @@
             for (const proxy of CORS_PROXIES) {
                 try {
                     logConsole("Scraping metadata Instagram...");
-                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 5000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const parser = new DOMParser();
@@ -889,7 +958,7 @@
                         const ogVideo = doc.querySelector('meta[property="og:video"]')?.content ||
                                         doc.querySelector('meta[property="og:video:secure_url"]')?.content;
                         const ogThumb = doc.querySelector('meta[property="og:image"]')?.content;
-                        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || "Instagram Content";
+                        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || "Instagram Reel";
 
                         if (ogVideo) {
                             return {
@@ -911,7 +980,7 @@
             for (const proxy of CORS_PROXIES) {
                 try {
                     logConsole("Scraping metadata Pinterest...");
-                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 5000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const parser = new DOMParser();
@@ -942,7 +1011,7 @@
             for (const proxy of CORS_PROXIES) {
                 try {
                     logConsole("Mengekstrak file CapCut...");
-                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 5000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const videoMatch = html.match(/https?:\/\/[^"]+\.(mp4)[^"]*/i);
@@ -967,17 +1036,17 @@
             for (const proxy of CORS_PROXIES) {
                 try {
                     logConsole("Mencari trek audio Spotify...");
-                    const res = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
+                    const res = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 5000);
                     if (res.ok) {
                         const html = await res.text();
                         const titleMatch = html.match(/<title>(.*?)<\/title>/i)?.[1] || "Spotify Track";
                         const cleanQuery = titleMatch.replace("- song and lyrics by", "").replace("| Spotify", "").trim();
                         
-                        const searchRes = await fetchWithTimeout(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(cleanQuery)}&filter=music_songs`, {}, 6000);
+                        const searchRes = await fetchWithTimeout(`https://inv.tux.pizza/api/v1/search?q=${encodeURIComponent(cleanQuery)}&type=video`, {}, 5000);
                         if (searchRes.ok) {
                             const searchData = await searchRes.json();
-                            if (searchData.items && searchData.items[0]) {
-                                return await extractYouTube(`https://youtube.com/watch?v=${searchData.items[0].url.split('v=')[1]}`, true);
+                            if (searchData && searchData[0]) {
+                                return await extractYouTube(`https://youtube.com/watch?v=${searchData[0].videoId}`, true);
                             }
                         }
                     }
@@ -991,7 +1060,7 @@
             for (const proxy of CORS_PROXIES) {
                 try {
                     logConsole("Mencari Stream Media Universal...");
-                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 5000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const parser = new DOMParser();
