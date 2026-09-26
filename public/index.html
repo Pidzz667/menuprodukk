@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PidzStore Media Downloader - Multi-Platform </title>
+    <title>PidzStore Media Downloader - Multi-Platform Engine</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -146,10 +146,10 @@
             </div>
 
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-sans text-white mb-1">
-                PidzStore <span class="text-sky-400">Download</span>
+                PidzStore <span class="text-sky-400">Media Engine v3.0</span>
             </h1>
             <p class="text-slate-400 text-xs sm:text-sm font-medium tracking-wide mb-8">
-                download video medsos tanpa watermak
+                Universal Multi-Threaded Media Downloader
             </p>
 
             <div class="w-56 h-1.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
@@ -170,7 +170,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                        PidzStore <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30 font-semibold">Pidz</span>
+                        PidzStore <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30 font-semibold">ULTRA</span>
                     </h1>
                     <p class="text-[11px] text-slate-400 font-medium">Fast, No-Watermark Media Downloader</p>
                 </div>
@@ -187,13 +187,13 @@
         <!-- HERO SECTION -->
         <section class="text-center my-4 sm:my-8">
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-950/60 border border-sky-500/30 text-sky-300 text-xs font-semibold mb-4 backdrop-blur-md">
-                <i class="fa-solid fa-bolt text-amber-400"></i> Anti-Bot Active
+                <i class="fa-solid fa-bolt text-amber-400"></i> Multi-Proxy CORS Bypass & Real Extractor Active
             </div>
             <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
                 Unduh Video HD & Audio <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400">Tanpa Watermark</span>
             </h2>
             <p class="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed">
-                Mendukung TikTok, Instagram Reels, YouTube HD/MP3, Spotify, CapCut, Pinterest, TeraBox & CapCut dengan kecepatan tinggi.
+                Mendukung TikTok, Instagram Reels, YouTube HD/MP3, Spotify, CapCut, Pinterest, & TeraBox dengan ekstrak langsung tanpa error.
             </p>
         </section>
 
@@ -308,21 +308,21 @@
                     <div class="w-12 h-12 rounded-2xl bg-sky-950 border border-sky-400/40 flex items-center justify-center">
                         <i class="fa-solid fa-gear text-sky-400 text-xl animate-spin"></i>
                     </div>
+        <!-- ERROR / NOTIFICATION MODAL -->
+        <div id="error-modal" class="hidden max-w-2xl mx-auto w-full my-6">
+            <div class="glass-card p-6 rounded-3xl border border-rose-500/40 relative overflow-hidden bg-rose-950/20">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-950 border border-rose-500/50 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-400 text-xl"></i>
+                    </div>
                     <div>
-                        <h3 class="text-base font-bold text-white font-sans">Menghubungkan ke PidzStore Edge Engine</h3>
-                        <p id="proc-step-title" class="text-xs text-sky-400 font-mono">Langkah 1/4: Memverifikasi tautan media...</p>
+                        <h3 class="text-base font-bold text-white font-sans" id="error-title">Gagal Mengunduh Media</h3>
+                        <p id="error-msg" class="text-xs text-rose-300 mt-1">Tautan tidak valid atau media diprivat oleh pemiliknya.</p>
                     </div>
                 </div>
-
-                <!-- Progress Bar -->
-                <div class="w-full bg-slate-900 rounded-full h-2 mb-4 overflow-hidden border border-slate-800">
-                    <div id="proc-bar" class="bg-gradient-to-r from-sky-500 to-indigo-500 h-full w-0 transition-all duration-300"></div>
-                </div>
-
-                <!-- Console Output Log -->
-                <div class="bg-slate-950/90 rounded-2xl p-3 border border-slate-800/80 font-mono text-[11px] text-slate-400 space-y-1 h-28 overflow-y-auto" id="proc-console">
-                    <p class="text-emerald-400">&gt; Engine started. Initializing CDN handshake...</p>
-                </div>
+                <button onclick="closeErrorModal()" class="mt-4 px-4 py-2 rounded-xl bg-rose-900/50 hover:bg-rose-800/60 border border-rose-500/40 text-xs text-white font-semibold transition">
+                    Coba Tautan Lain
+                </button>
             </div>
         </div>
 
@@ -514,7 +514,13 @@
         }
         animateParticles();
 
-        // APP LOGIC & MULTI-ENGINE HANDLER
+        // CORS PROXIES LIST
+        const CORS_PROXIES = [
+            'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url=',
+            'https://api.codetabs.com/v1/proxy?quest='
+        ];
+
         let currentService = null;
         let lastResultData = null;
 
@@ -530,13 +536,6 @@
             { id: 'terabox', name: 'TeraBox File', icon: 'fa-solid fa-box-archive', patterns: [/terabox\.com/i, /1024tera\.com/i, /teraboxapp\.com/i] }
         ];
 
-        // Sample Royalty-Free Media Fallback Assets (Ensures user NEVER gets a failed UI!)
-        const SAMPLE_FALLBACKS = {
-            video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-            thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
-        };
-
         window.addEventListener('DOMContentLoaded', () => {
             const introBar = document.getElementById('intro-bar');
             const introText = document.getElementById('intro-text');
@@ -546,7 +545,7 @@
 
             setTimeout(() => {
                 if (introBar) introBar.style.width = '70%';
-                if (introText) introText.textContent = "Sinkronisasi Multi-Engine Node...";
+                if (introText) introText.textContent = "Menghubungkan Engine Proxy CORS...";
             }, 300);
 
             setTimeout(() => {
@@ -637,6 +636,7 @@
                 card.classList.remove('border-sky-400', 'bg-sky-950/60', 'shadow-lg');
                 card.classList.add('border-slate-800');
             });
+            closeErrorModal();
         }
 
         async function pasteClipboard() {
@@ -661,12 +661,25 @@
             consoleEl.scrollTop = consoleEl.scrollHeight;
         }
 
+        function showErrorModal(title, msg) {
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-msg').textContent = msg;
+            document.getElementById('error-modal').classList.remove('hidden');
+            document.getElementById('result-section').classList.add('hidden');
+        }
+
+        function closeErrorModal() {
+            document.getElementById('error-modal').classList.add('hidden');
+        }
+
         async function startDownloadProcess() {
             const urlInput = document.getElementById('media-url').value.trim();
             if (!urlInput) {
                 showToast("Masukkan URL media terlebih dahulu!", "warning");
                 return;
             }
+
+            closeErrorModal();
 
             if (!currentService) {
                 const detected = detectPlatform(urlInput);
@@ -686,118 +699,321 @@
             // Step 1
             procBar.style.width = '25%';
             procStepTitle.textContent = "Langkah 1/4: Menganalisis URL Target...";
-            await logConsole(`Memeriksa URL: ${urlInput.substring(0, 35)}...`);
-            await new Promise(r => setTimeout(r, 400));
+            await logConsole(`Memeriksa URL: ${urlInput.substring(0, 45)}...`);
+            await new Promise(r => setTimeout(r, 300));
 
             // Step 2
-            procBar.style.width = '55%';
-            procStepTitle.textContent = "Langkah 2/4: Membuka Koneksi Bypass Edge Node...";
-            await logConsole(`Bypassing CDN restrictions & anti-bot layer...`);
-            await new Promise(r => setTimeout(r, 500));
+            procBar.style.width = '50%';
+            procStepTitle.textContent = "Langkah 2/4: Mengaktifkan Multi-Proxy Engine...";
+            await logConsole(`Membuka handshake jalur CORS Proxy...`);
+            await new Promise(r => setTimeout(r, 300));
 
             // Step 3
-            procBar.style.width = '85%';
-            procStepTitle.textContent = "Langkah 3/4: Mengekstrak Stream Video & Audio...";
-            await logConsole(`Parsing direct MP4/MP3 media stream...`, true);
+            procBar.style.width = '75%';
+            procStepTitle.textContent = "Langkah 3/4: Mengekstrak Stream Media...";
+            await logConsole(`Proses ekstrasi direct MP4/MP3 media URL...`, true);
 
-            // Attempt Extraction
-            let mediaData = await extractMediaFromApis(currentService, urlInput);
-            let isFallback = false;
+            let mediaData = null;
+
+            try {
+                if (currentService === 'tiktok') {
+                    mediaData = await extractTikTok(urlInput);
+                } else if (currentService === 'ytmp4' || currentService === 'ytmp3' || currentService === 'ytshort') {
+                    mediaData = await extractYouTube(urlInput, currentService === 'ytmp3');
+                } else if (currentService === 'instagram') {
+                    mediaData = await extractInstagram(urlInput);
+                } else if (currentService === 'pinterest') {
+                    mediaData = await extractPinterest(urlInput);
+                } else if (currentService === 'capcut') {
+                    mediaData = await extractCapCut(urlInput);
+                } else if (currentService === 'spotify') {
+                    mediaData = await extractSpotify(urlInput);
+                } else {
+                    mediaData = await extractUniversalOpenGraph(urlInput);
+                }
+            } catch (err) {
+                console.error("Extraction failed:", err);
+            }
 
             if (!mediaData || !mediaData.mediaUrl) {
-                await logConsole(`[Proxy Mode] Server publik sibuk, mengaktifkan Auto-Fallback Stream HD...`, true);
-                isFallback = true;
-                mediaData = generateFallbackMedia(currentService, urlInput);
+                procModal.classList.add('hidden');
+                showErrorModal(
+                    "Gagal Mengekstrak Media", 
+                    "Sistem tidak dapat mengambil file video/audio dari tautan tersebut. Pastikan tautan bersifat publik dan tidak diproteksi/login."
+                );
+                showToast("Ekstraksi gagal, periksa tautan kembali.", "error");
+                return;
             }
 
             // Step 4 Complete
             procBar.style.width = '100%';
-            procStepTitle.textContent = "Langkah 4/4: Penyelesaian Media!";
-            await logConsole(`Media siap! Rendering preview player...`, true);
-            await new Promise(r => setTimeout(r, 400));
+            procStepTitle.textContent = "Langkah 4/4: Media Berhasil Disiapkan!";
+            await logConsole(`Ekstraksi sukses! Menyiapkan pemutar media...`, true);
+            await new Promise(r => setTimeout(r, 300));
 
             procModal.classList.add('hidden');
-            displayValidatedResult(mediaData, currentService, urlInput, isFallback);
-            showToast("Media berhasil diproses!", "success");
+            displayValidatedResult(mediaData, currentService);
+            showToast("Media berhasil diekstrak!", "success");
         }
 
-        async function extractMediaFromApis(service, urlInput) {
-            // TikTok Special Fast TikWM Direct Call
-            if (service === 'tiktok') {
+        // TIKTOK ENGINE
+        async function extractTikTok(url) {
+            // Method 1: TiklyDown Public API
+            try {
+                const res = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.video) {
+                        return {
+                            mediaUrl: data.video.noWatermark || data.video.watermark || data.video.direct,
+                            audioUrl: data.music?.play_url || "",
+                            title: data.title || "TikTok Video",
+                            author: `@${data.author?.unique_id || data.author?.nickname || 'tiktok_user'}`,
+                            thumbnail: data.video.cover || data.author?.avatar || ""
+                        };
+                    }
+                }
+            } catch (e) { console.warn("TiklyDown failed", e); }
+
+            // Method 2: TikWM via CORS Proxy
+            for (const proxy of CORS_PROXIES) {
                 try {
-                    const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(urlInput)}`);
+                    const apiUrl = `${proxy}${encodeURIComponent(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`)}`;
+                    const res = await fetch(apiUrl);
                     if (res.ok) {
-                        const tikwmData = await res.json();
-                        if (tikwmData && tikwmData.code === 0 && tikwmData.data) {
+                        const json = await res.json();
+                        const data = json.data || (typeof json === 'string' ? JSON.parse(json).data : null);
+                        if (data && (data.play || data.wmplay)) {
                             return {
-                                mediaUrl: tikwmData.data.play || tikwmData.data.wmplay,
-                                audioUrl: tikwmData.data.music || "",
-                                title: tikwmData.data.title || "TikTok Video No Watermark",
-                                author: tikwmData.data.author?.nickname || "@tiktok_user",
-                                thumbnail: tikwmData.data.cover || tikwmData.data.origin_cover || ""
+                                mediaUrl: data.play || data.wmplay,
+                                audioUrl: data.music || "",
+                                title: data.title || "TikTok Content",
+                                author: `@${data.author?.unique_id || 'creator'}`,
+                                thumbnail: data.cover || data.origin_cover || ""
                             };
                         }
                     }
-                } catch (e) {
-                    console.warn("TikWM Direct skipped", e);
-                }
+                } catch (e) { console.warn("TikWM proxy failed", e); }
+            }
+            return null;
+        }
+
+        // YOUTUBE & SHORTS ENGINE (Piped & Invidious APIs)
+        async function extractYouTube(url, isAudioOnly = false) {
+            // Extract Video ID
+            let videoId = "";
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                videoId = match[2];
+            } else {
+                return null;
             }
 
-            // Cobalt Open API Instances
-            const cobaltInstances = [
-                "https://api.cobalt.tools/",
-                "https://co.wuk.sh/"
+            const PIPED_INSTANCES = [
+                'https://pipedapi.kavin.rocks',
+                'https://api.piped.video',
+                'https://pipedapi.mha.fi'
             ];
 
-            for (const inst of cobaltInstances) {
+            for (const inst of PIPED_INSTANCES) {
                 try {
-                    const isAudio = (service === 'ytmp3' || service === 'spotify');
-                    const res = await fetch(inst, {
-                        method: 'POST',
-                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ url: urlInput, downloadMode: isAudio ? "audio" : "auto" })
-                    });
+                    const res = await fetch(`${inst}/streams/${videoId}`);
                     if (res.ok) {
                         const data = await res.json();
-                        if (data && data.url) {
-                            return {
-                                mediaUrl: data.url,
-                                audioUrl: isAudio ? data.url : "",
-                                title: data.filename || `PidzStore Media (${service.toUpperCase()})`,
-                                author: "PidzStore Engine",
-                                thumbnail: ""
-                            };
+                        if (data) {
+                            let streamUrl = "";
+                            if (isAudioOnly) {
+                                const audioStream = data.audioStreams?.sort((a,b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
+                                streamUrl = audioStream?.url || "";
+                            } else {
+                                const videoStream = data.videoStreams?.find(v => v.mimeType?.includes('mp4') && v.hasAudio) ||
+                                                    data.videoStreams?.sort((a,b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
+                                streamUrl = videoStream?.url || "";
+                            }
+
+                            if (streamUrl) {
+                                return {
+                                    mediaUrl: streamUrl,
+                                    audioUrl: isAudioOnly ? streamUrl : (data.audioStreams?.[0]?.url || ""),
+                                    title: data.title || "YouTube Video",
+                                    author: data.uploader || "YouTube Channel",
+                                    thumbnail: data.thumbnailUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+                                };
+                            }
                         }
                     }
-                } catch (e) {
-                    console.warn(`Cobalt skipped: ${inst}`);
-                }
+                } catch (e) { console.warn("Piped instance failed", e); }
             }
+
+            // Invidious Backup API
+            try {
+                const invRes = await fetch(`https://inv.tux.pizza/api/v1/videos/${videoId}`);
+                if (invRes.ok) {
+                    const invData = await invRes.json();
+                    if (invData && invData.formatStreams) {
+                        const stream = invData.formatStreams.reverse()[0];
+                        return {
+                            mediaUrl: stream.url,
+                            audioUrl: "",
+                            title: invData.title || "YouTube Stream",
+                            author: invData.author || "YouTube Creator",
+                            thumbnail: invData.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+                        };
+                    }
+                }
+            } catch (e) { console.warn("Invidious failed", e); }
 
             return null;
         }
 
-        function generateFallbackMedia(service, urlInput) {
-            const serviceName = service.toUpperCase();
-            const isAudioOnly = (service === 'spotify' || service === 'ytmp3');
-            
-            return {
-                mediaUrl: isAudioOnly ? SAMPLE_FALLBACKS.audio : SAMPLE_FALLBACKS.video,
-                audioUrl: SAMPLE_FALLBACKS.audio,
-                title: `PidzStore ${serviceName} HD Content Stream`,
-                author: `@pidzstore_media`,
-                thumbnail: SAMPLE_FALLBACKS.thumbnail
-            };
+        // INSTAGRAM ENGINE
+        async function extractInstagram(url) {
+            // OpenGraph Parsing via CORS Proxy
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    if (htmlRes.ok) {
+                        const html = await htmlRes.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        const ogVideo = doc.querySelector('meta[property="og:video"]')?.content ||
+                                        doc.querySelector('meta[property="og:video:secure_url"]')?.content;
+                        const ogThumb = doc.querySelector('meta[property="og:image"]')?.content;
+                        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || "Instagram Content";
+
+                        if (ogVideo) {
+                            return {
+                                mediaUrl: ogVideo,
+                                audioUrl: "",
+                                title: ogTitle,
+                                author: "@instagram_user",
+                                thumbnail: ogThumb || ""
+                            };
+                        }
+                    }
+                } catch (e) { console.warn("IG proxy scrape failed", e); }
+            }
+            return null;
         }
 
-        function displayValidatedResult(data, service, originalUrl, isFallback = false) {
+        // PINTEREST ENGINE
+        async function extractPinterest(url) {
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    if (htmlRes.ok) {
+                        const html = await htmlRes.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        const ogVideo = doc.querySelector('meta[property="og:video"]')?.content ||
+                                        doc.querySelector('meta[name="twitter:player:stream"]')?.content;
+                        const ogThumb = doc.querySelector('meta[property="og:image"]')?.content;
+                        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || "Pinterest Pin";
+
+                        if (ogVideo || ogThumb) {
+                            return {
+                                mediaUrl: ogVideo || ogThumb,
+                                audioUrl: "",
+                                title: ogTitle,
+                                author: "@pinterest_user",
+                                thumbnail: ogThumb || ""
+                            };
+                        }
+                    }
+                } catch (e) { console.warn("Pinterest scrape failed", e); }
+            }
+            return null;
+        }
+
+        // CAPCUT ENGINE
+        async function extractCapCut(url) {
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    if (htmlRes.ok) {
+                        const html = await htmlRes.text();
+                        const videoMatch = html.match(/https?:\/\/[^"]+\.(mp4)[^"]*/i);
+                        const ogTitle = html.match(/<title>(.*?)<\/title>/i)?.[1] || "CapCut Template";
+                        if (videoMatch) {
+                            return {
+                                mediaUrl: videoMatch[0],
+                                audioUrl: "",
+                                title: ogTitle,
+                                author: "@capcut_creator",
+                                thumbnail: ""
+                            };
+                        }
+                    }
+                } catch (e) { console.warn("CapCut proxy failed", e); }
+            }
+            return null;
+        }
+
+        // SPOTIFY ENGINE
+        async function extractSpotify(url) {
+            // Search track info & route to YouTube Audio Stream
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const res = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    if (res.ok) {
+                        const html = await res.text();
+                        const titleMatch = html.match(/<title>(.*?)<\/title>/i)?.[1] || "Spotify Track";
+                        const cleanQuery = titleMatch.replace("- song and lyrics by", "").replace("| Spotify", "").trim();
+                        
+                        // Search audio on Piped
+                        const searchRes = await fetch(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(cleanQuery)}&filter=music_songs`);
+                        if (searchRes.ok) {
+                            const searchData = await searchRes.json();
+                            if (searchData.items && searchData.items[0]) {
+                                return await extractYouTube(`https://youtube.com/watch?v=${searchData.items[0].url.split('v=')[1]}`, true);
+                            }
+                        }
+                    }
+                } catch (e) { console.warn("Spotify search failed", e); }
+            }
+            return null;
+        }
+
+        // UNIVERSAL OPENGRAPH SCRAPER
+        async function extractUniversalOpenGraph(url) {
+            for (const proxy of CORS_PROXIES) {
+                try {
+                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    if (htmlRes.ok) {
+                        const html = await htmlRes.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        const ogVideo = doc.querySelector('meta[property="og:video"]')?.content ||
+                                        doc.querySelector('meta[property="og:video:secure_url"]')?.content;
+                        const ogThumb = doc.querySelector('meta[property="og:image"]')?.content;
+                        const ogTitle = doc.querySelector('title')?.textContent || "Extracted Media";
+
+                        if (ogVideo || ogThumb) {
+                            return {
+                                mediaUrl: ogVideo || ogThumb,
+                                audioUrl: "",
+                                title: ogTitle,
+                                author: "@universal_media",
+                                thumbnail: ogThumb || ""
+                            };
+                        }
+                    }
+                } catch (e) {}
+            }
+            return null;
+        }
+
+        function displayValidatedResult(data, service) {
             const resultSection = document.getElementById('result-section');
             const thumbImg = document.getElementById('media-thumb');
             const titleEl = document.getElementById('res-title');
             const authorEl = document.getElementById('res-author');
             const platformTag = document.getElementById('res-platform-tag');
             const videoDlBtn = document.getElementById('btn-dl-video');
-            const fallbackInd = document.getElementById('fallback-indicator');
             const videoPreview = document.getElementById('video-preview');
             const audioBox = document.getElementById('audio-box');
             const audioPreview = document.getElementById('audio-preview');
@@ -809,17 +1025,11 @@
             authorEl.querySelector('span').textContent = data.author || `@creator`;
             platformTag.textContent = service.toUpperCase();
 
-            if (isFallback) {
-                fallbackInd.classList.remove('hidden');
-            } else {
-                fallbackInd.classList.add('hidden');
-            }
-
             if (data.thumbnail) {
                 thumbImg.src = data.thumbnail;
-                thumbImg.onerror = () => { thumbImg.src = SAMPLE_FALLBACKS.thumbnail; };
+                thumbImg.onerror = () => { thumbImg.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"; };
             } else {
-                thumbImg.src = SAMPLE_FALLBACKS.thumbnail;
+                thumbImg.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80";
             }
 
             videoDlBtn.href = data.mediaUrl;
