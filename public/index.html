@@ -1,47 +1,35 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkySaver - By Pidz Store</title>
+    <title>PidzStore Media Downloader - Multi-Platform</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
                     },
                     colors: {
                         brand: {
                             50: '#f0f7ff',
                             100: '#e0effe',
-                            500: '#0066ff',
-                            600: '#0252cc',
-                            700: '#003eb3',
-                            800: '#0a2e8c',
-                            900: '#091e56',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        glow: {
-                            '0%': { boxShadow: '0 0 15px rgba(0, 102, 255, 0.4)' },
-                            '100%': { boxShadow: '0 0 30px rgba(0, 229, 255, 0.8)' }
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c2a4a',
+                            950: '#061629'
                         }
                     }
                 }
@@ -50,277 +38,309 @@
     </script>
     <style>
         body {
-            background: linear-gradient(135deg, #070d1e 0%, #0a1936 35%, #082859 70%, #031338 100%);
+            background-color: #070b14;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #e2e8f0;
+            color: #f1f5f9;
         }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.65);
+
+        .tech-card {
+            background: rgba(13, 20, 36, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glass-input {
-            background: rgba(2, 12, 32, 0.75);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+
+        .tech-card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .glass-input:focus-within {
-            border-color: #38bdf8;
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 50%, #a855f7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .glow-btn {
-            background: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glow-btn:hover {
-            box-shadow: 0 0 25px rgba(0, 198, 255, 0.6);
+        .tech-card-hover:hover {
+            border-color: rgba(56, 189, 248, 0.4);
             transform: translateY(-2px);
         }
-        /* Custom scrollbar */
+
+        .tech-input {
+            background: rgba(8, 14, 26, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .tech-input:focus-within {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+        }
+
+        .btn-brand {
+            background-color: #0284c7;
+            transition: all 0.2s ease;
+        }
+        .btn-brand:hover {
+            background-color: #0369a1;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+        #intro-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(10, 25, 54, 0.8);
+            background: #070b14;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.5);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(59, 130, 246, 0.8);
+            background: #1e293b;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="font-sans antialiased overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+<body class="font-sans antialiased selection:bg-sky-600 selection:text-white relative overflow-x-hidden">
 
-    <!-- Background Animated Blobs -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div class="absolute top-1/3 -right-32 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+    <!-- INTRO SPLASH SCREEN (PidzStore Tech Intro) -->
+    <div id="intro-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050912] text-white">
+        <div class="relative z-10 flex flex-col items-center text-center px-4">
+            
+            <!-- PidzStore Minimalist Icon -->
+            <div class="w-20 h-20 rounded-2xl bg-sky-950 border border-sky-500/30 flex items-center justify-center mb-5 shadow-2xl relative">
+                <i class="fa-solid fa-arrow-down-to-bracket text-3xl text-sky-400"></i>
+                <span class="absolute -bottom-1 -right-1 flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+                </span>
+            </div>
+
+            <!-- Title & Developer Brand -->
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-white mb-1">
+                PidzStore <span class="text-sky-400 font-semibold">Media</span>
+            </h1>
+            <p class="text-slate-400 text-xs font-medium tracking-wide mb-6">
+                Engine Downloader Resmi by <span class="text-slate-200 font-semibold">PidzStore</span>
+            </p>
+
+            <!-- Loading Indicator -->
+            <div class="w-40 h-1 bg-slate-800 rounded-full overflow-hidden">
+                <div id="intro-bar" class="h-full bg-sky-500 rounded-full w-0 transition-all duration-500"></div>
+            </div>
+        </div>
     </div>
 
     <!-- MAIN CONTAINER -->
-    <div class="relative z-10 max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col min-h-screen">
+    <div id="main-content" class="relative z-10 max-w-5xl mx-auto px-4 py-4 sm:px-6 flex flex-col min-h-screen">
 
         <!-- HEADER / NAVBAR -->
-        <header class="flex items-center justify-between py-4 mb-8 border-b border-white/10">
-            <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <i class="fa-solid font-bold fa-cloud-arrow-down text-xl text-white"></i>
+        <header class="flex items-center justify-between py-4 mb-6 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-sky-950 border border-sky-500/30 flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-down text-sky-400 text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                        SkySaver <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-cyan-300">PRO v2.0</span>
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight font-display text-white">
+                        PidzStore <span class="text-sky-400 font-medium text-sm">Downloader</span>
                     </h1>
-                    <p class="text-xs text-slate-400">Universal HD Media Downloader</p>
+                    <p class="text-[11px] text-slate-400 font-medium">Pengunduh Media Universal</p>
                 </div>
             </div>
 
-            <!-- Serverless Proxy Status Indicator -->
-            <div class="hidden sm:flex items-center gap-3">
-                <div class="glass-panel px-3 py-1.5 rounded-full text-xs flex items-center gap-2 border border-blue-500/20">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span class="text-slate-300 font-medium">Serverless API Connected</span>
-                </div>
-                <button onclick="toggleSettingsModal()" class="glass-panel p-2.5 rounded-xl hover:bg-white/10 transition text-slate-300 hover:text-white" title="Pengaturan API">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
+            <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-lg bg-sky-950 border border-sky-500/30 text-[11px] text-sky-300 font-semibold flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> PidzStore Engine
+                </span>
             </div>
         </header>
 
         <!-- HERO SECTION -->
-        <section class="text-center my-6">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-4 animate-float">
-                <i class="fa-solid fa-bolt text-yellow-400"></i> Unduh Tanpa Watermark & Kualitas Tinggi
-            </div>
-            <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
-                Unduh Video & Audio <br class="hidden sm:inline"> Dari <span class="gradient-text">Semua Platform</span>
+        <section class="text-center my-4 sm:my-6">
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white font-display tracking-tight leading-snug mb-2">
+                Unduh Media HD Tanpa Watermark
             </h2>
-            <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
-                Tempelkan tautan dari TikTok, Instagram, YouTube, Spotify, Pinterest, TeraBox, atau CapCut.
+            <p class="text-slate-400 max-w-xl mx-auto text-xs sm:text-sm leading-relaxed">
+                Mendukung TikTok, Instagram Reel, YouTube Video MP4 & MP3, Spotify, CapCut, Pinterest, & TeraBox.
             </p>
         </section>
 
-        <!-- INPUT FORM SECTION -->
-        <section class="max-w-3xl mx-auto w-full mb-10">
-            <div class="glass-panel p-3 sm:p-4 rounded-3xl shadow-2xl relative">
+        <!-- INPUT URL FORM -->
+        <section class="max-w-2xl mx-auto w-full mb-8">
+            <div class="tech-card p-2.5 sm:p-3 rounded-2xl shadow-xl relative">
                 
-                <!-- URL Input Group -->
-                <div class="glass-input rounded-2xl flex flex-col sm:flex-row items-center p-2 gap-2 transition-all">
+                <div class="tech-input rounded-xl flex flex-col sm:flex-row items-center p-1.5 gap-2 transition-all">
                     
                     <div class="flex items-center w-full px-3 py-2 gap-3">
-                        <i id="platform-icon" class="fa-solid fa-link text-cyan-400 text-lg"></i>
+                        <i id="platform-icon" class="fa-solid fa-link text-slate-400 text-base"></i>
                         <input type="text" 
                                id="media-url" 
-                               placeholder="Tempel tautan video/musik di sini..." 
-                               class="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none text-sm sm:text-base"
+                               placeholder="Tempel tautan video atau audio di sini..." 
+                               class="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none text-xs sm:text-sm font-medium"
                                autocomplete="off"
                                oninput="handleUrlInput()">
                         
                         <button id="clear-btn" onclick="clearInput()" class="hidden text-slate-400 hover:text-white p-1">
-                            <i class="fa-solid fa-circle-xmark"></i>
+                            <i class="fa-solid fa-circle-xmark text-sm"></i>
                         </button>
                     </div>
 
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button onclick="pasteClipboard()" type="button" class="px-3 py-2.5 rounded-xl glass-panel text-slate-300 hover:text-white text-xs font-semibold hover:bg-white/10 transition flex items-center gap-1.5 w-full sm:w-auto justify-center">
+                        <button onclick="pasteClipboard()" type="button" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-1.5 w-full sm:w-auto justify-center">
                             <i class="fa-regular fa-paste"></i> Tempel
                         </button>
                         
-                        <button id="download-btn" onclick="startDownload()" class="glow-btn px-6 py-2.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 w-full sm:w-auto min-w-[130px]">
-                            <i class="fa-solid fa-arrow-down font-black"></i> Process
+                        <button id="download-btn" onclick="startDownload()" class="btn-brand px-5 py-2 rounded-lg text-white font-bold text-xs flex items-center justify-center gap-2 w-full sm:w-auto min-w-[110px]">
+                            <i class="fa-solid fa-arrow-down-to-bracket"></i> Proses
                         </button>
                     </div>
                 </div>
 
-                <!-- Auto Detection Badge -->
-                <div id="detection-badge" class="mt-3 px-2 flex items-center justify-between text-xs text-slate-400 min-h-[24px]">
-                    <span id="detected-service" class="flex items-center gap-1.5 font-medium text-cyan-400">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Deteksi Otomatis Aktif
+                <!-- Detection Badge -->
+                <div class="mt-2.5 px-2 flex items-center justify-between text-xs text-slate-400">
+                    <span id="detected-service" class="flex items-center gap-1.5 font-medium text-sky-400">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Deteksi Otomatis Active
                     </span>
-                    <span class="hidden sm:inline text-slate-500">Format: MP4 / MP3 HD</span>
+                    <span class="text-slate-500 text-[11px]">Powered by PidzStore</span>
                 </div>
             </div>
         </section>
 
-        <!-- PLATFORM TABS / SUPPORTED SERVICES -->
-        <section class="max-w-4xl mx-auto w-full mb-10">
-            <p class="text-center text-xs uppercase tracking-widest text-slate-400 font-bold mb-4">Platform Didukung</p>
+        <!-- PLATFORMS GRID -->
+        <section class="max-w-3xl mx-auto w-full mb-8">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Platform Didukung</p>
+            </div>
             
-            <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3">
+            <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2">
                 <!-- TikTok -->
-                <button onclick="selectService('tiktok')" id="service-tiktok" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-brands fa-tiktok text-xl text-pink-500 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('tiktok')" id="service-tiktok" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-brands fa-tiktok text-lg text-slate-200"></i>
                     <span class="text-[11px] font-medium text-slate-300">TikTok</span>
                 </button>
                 
                 <!-- Instagram -->
-                <button onclick="selectService('instagram')" id="service-instagram" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-brands fa-instagram text-xl text-amber-500 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('instagram')" id="service-instagram" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-brands fa-instagram text-lg text-slate-200"></i>
                     <span class="text-[11px] font-medium text-slate-300">Instagram</span>
                 </button>
 
                 <!-- YouTube MP4 -->
-                <button onclick="selectService('ytmp4')" id="service-ytmp4" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-brands fa-youtube text-xl text-red-500 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('ytmp4')" id="service-ytmp4" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-brands fa-youtube text-lg text-red-500"></i>
                     <span class="text-[11px] font-medium text-slate-300">YT MP4</span>
                 </button>
 
                 <!-- YouTube MP3 -->
-                <button onclick="selectService('ytmp3')" id="service-ytmp3" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-solid fa-music text-xl text-red-400 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('ytmp3')" id="service-ytmp3" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-solid fa-music text-lg text-slate-200"></i>
                     <span class="text-[11px] font-medium text-slate-300">YT MP3</span>
                 </button>
 
                 <!-- YT Shorts -->
-                <button onclick="selectService('ytshort')" id="service-ytshort" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-solid fa-bolt-lightning text-xl text-red-600 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('ytshort')" id="service-ytshort" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-solid fa-bolt text-lg text-red-500"></i>
                     <span class="text-[11px] font-medium text-slate-300">Shorts</span>
                 </button>
 
                 <!-- Spotify -->
-                <button onclick="selectService('spotify')" id="service-spotify" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-brands fa-spotify text-xl text-emerald-500 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('spotify')" id="service-spotify" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-brands fa-spotify text-lg text-emerald-400"></i>
                     <span class="text-[11px] font-medium text-slate-300">Spotify</span>
                 </button>
 
                 <!-- Pinterest -->
-                <button onclick="selectService('pinterest')" id="service-pinterest" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-brands fa-pinterest text-xl text-red-500 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('pinterest')" id="service-pinterest" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-brands fa-pinterest text-lg text-slate-200"></i>
                     <span class="text-[11px] font-medium text-slate-300">Pinterest</span>
                 </button>
 
                 <!-- CapCut -->
-                <button onclick="selectService('capcut')" id="service-capcut" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-solid fa-scissors text-xl text-cyan-400 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('capcut')" id="service-capcut" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-solid fa-scissors text-lg text-slate-200"></i>
                     <span class="text-[11px] font-medium text-slate-300">CapCut</span>
                 </button>
 
                 <!-- TeraBox -->
-                <button onclick="selectService('terabox')" id="service-terabox" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
-                    <i class="fa-solid fa-box-archive text-xl text-blue-400 group-hover:scale-110 transition"></i>
+                <button onclick="selectService('terabox')" id="service-terabox" class="service-card tech-card tech-card-hover p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border border-slate-800">
+                    <i class="fa-solid fa-box-archive text-lg text-slate-200"></i>
                     <span class="text-[11px] font-medium text-slate-300">TeraBox</span>
                 </button>
             </div>
         </section>
 
         <!-- LOADING SKELETON -->
-        <div id="loading-state" class="hidden max-w-3xl mx-auto w-full my-6">
-            <div class="glass-panel p-6 rounded-3xl text-center flex flex-col items-center justify-center gap-4">
-                <div class="relative w-16 h-16 flex items-center justify-center">
-                    <div class="absolute inset-0 border-4 border-blue-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-                    <i class="fa-solid fa-cloud-arrow-down text-cyan-400 animate-pulse"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1">Mengekstrak Media...</h3>
-                    <p class="text-xs text-slate-400">Menghubungkan ke API peladen dan menyiapkan berkas media.</p>
-                </div>
+        <div id="loading-state" class="hidden max-w-2xl mx-auto w-full my-6">
+            <div class="tech-card p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-3">
+                <i class="fa-solid fa-circle-notch text-sky-400 text-2xl animate-spin"></i>
+                <p class="text-xs font-semibold text-slate-300">Memproses media via PidzStore Engine...</p>
             </div>
         </div>
 
-        <!-- RESULT CARD SECTION -->
-        <section id="result-section" class="hidden max-w-3xl mx-auto w-full mb-10">
-            <div class="glass-panel p-5 sm:p-6 rounded-3xl border border-cyan-500/30 shadow-2xl relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl"></div>
+        <!-- RESULT SECTION -->
+        <section id="result-section" class="hidden max-w-2xl mx-auto w-full mb-8">
+            <div class="tech-card p-5 rounded-2xl border border-sky-500/20 shadow-xl relative overflow-hidden">
 
-                <div class="flex flex-col md:flex-row gap-6 items-center">
+                <div class="flex flex-col sm:flex-row gap-5 items-center">
                     
-                    <!-- Media Preview Container (Video / Image / Audio Cover) -->
-                    <div class="w-full md:w-64 flex-shrink-0 flex flex-col items-center">
-                        <div id="preview-box" class="w-full aspect-video md:aspect-square bg-slate-900/80 rounded-2xl overflow-hidden border border-white/10 shadow-lg relative flex items-center justify-center">
-                            <img id="media-thumb" src="" alt="Thumbnail" class="w-full h-full object-cover hidden">
-                            <div id="thumb-placeholder" class="text-slate-600 flex flex-col items-center gap-2">
-                                <i class="fa-solid fa-file-video text-3xl"></i>
-                                <span class="text-xs">Preview Media</span>
+                    <!-- Media Thumbnail Box -->
+                    <div class="w-full sm:w-48 flex-shrink-0">
+                        <div id="preview-box" class="w-full aspect-video sm:aspect-square bg-slate-950 rounded-xl overflow-hidden border border-slate-800 relative flex items-center justify-center">
+                            <img id="media-thumb" src="" alt="Thumbnail Media" class="w-full h-full object-cover hidden">
+                            <div id="thumb-placeholder" class="text-slate-500 flex flex-col items-center gap-2 p-3 text-center">
+                                <i class="fa-solid fa-film text-2xl text-sky-400"></i>
+                                <span class="text-[11px] font-medium">PidzStore Preview</span>
                             </div>
                         </div>
 
-                        <!-- Embedded Player when available -->
-                        <div id="player-container" class="w-full mt-3 hidden">
-                            <!-- Video Player -->
-                            <video id="video-preview" controls class="w-full rounded-xl hidden bg-black border border-blue-500/30 max-h-48"></video>
-                            <!-- Audio Player -->
-                            <audio id="audio-preview" controls class="w-full hidden mt-2"></audio>
+                        <!-- Embedded Player -->
+                        <div id="player-container" class="w-full mt-2 hidden">
+                            <video id="video-preview" controls class="w-full rounded-lg hidden bg-black border border-slate-800 max-h-40"></video>
+                            <audio id="audio-preview" controls class="w-full hidden mt-1"></audio>
                         </div>
                     </div>
 
-                    <!-- Media Info & Download Buttons -->
-                    <div class="flex-1 w-full space-y-4">
+                    <!-- Media Info & Action Buttons -->
+                    <div class="flex-1 w-full space-y-3">
                         <div>
-                            <div id="res-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-cyan-300 text-xs font-semibold mb-2">
-                                <i class="fa-solid fa-circle-check text-emerald-400"></i> Berhasil Ditemukan
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <span id="res-badge" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-check text-[9px]"></i> Berhasil
+                                </span>
+                                <span id="res-platform-tag" class="px-2 py-0.5 rounded bg-sky-950 text-sky-300 text-[10px] font-semibold uppercase">
+                                    PidzStore Engine
+                                </span>
                             </div>
-                            <h3 id="res-title" class="text-lg font-bold text-white line-clamp-2 leading-snug">
+                            <h3 id="res-title" class="text-sm sm:text-base font-bold text-white line-clamp-2 leading-snug font-display">
                                 Media Berhasil Diproses
                             </h3>
-                            <p id="res-author" class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                                <i class="fa-regular fa-user"></i> <span>Uploader Media</span>
+                            <p id="res-author" class="text-xs text-slate-400 mt-1 flex items-center gap-1 font-medium">
+                                <i class="fa-regular fa-user text-sky-400 text-[11px]"></i> <span>PidzStore Media</span>
                             </p>
                         </div>
 
-                        <!-- Download Action Buttons Grid -->
-                        <div id="download-actions" class="space-y-2 pt-2 border-t border-white/10">
+                        <!-- Action Buttons -->
+                        <div id="download-actions" class="space-y-2 pt-2 border-t border-slate-800">
                             <!-- Main Video Download Button -->
-                            <a id="btn-dl-video" href="#" target="_blank" download class="glow-btn w-full py-3 px-4 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 transition">
-                                <i class="fa-solid fa-download"></i> Unduh Video (HD Tanpa Watermark)
+                            <a id="btn-dl-video" href="#" target="_blank" rel="noopener noreferrer" class="btn-brand w-full py-2.5 px-4 rounded-lg text-white font-bold text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-download"></i> Unduh Video MP4
                             </a>
 
-                            <!-- Alternative Audio Download Button -->
-                            <a id="btn-dl-audio" href="#" target="_blank" download class="hidden glass-panel w-full py-2.5 px-4 rounded-xl text-slate-200 hover:text-white font-semibold text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition border border-cyan-500/30">
-                                <i class="fa-solid fa-music text-cyan-400"></i> Unduh Audio MP3
+                            <!-- Alternative Direct Link Button (For YT MP4 Fallback) -->
+                            <a id="btn-dl-alt" href="#" target="_blank" rel="noopener noreferrer" class="hidden bg-slate-800 hover:bg-slate-700 w-full py-2 px-4 rounded-lg text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition border border-slate-700">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-sky-400"></i> Buka Tautan Unduhan Langsung
                             </a>
 
-                            <!-- Secondary Copy Direct Link Button -->
-                            <button onclick="copyDirectLink()" class="glass-panel w-full py-2 px-4 rounded-xl text-slate-400 hover:text-slate-200 font-medium text-xs flex items-center justify-center gap-2 transition">
-                                <i class="fa-regular fa-copy"></i> Salin Direct Link Media
+                            <!-- Audio Download Button -->
+                            <a id="btn-dl-audio" href="#" target="_blank" rel="noopener noreferrer" class="hidden bg-slate-800 hover:bg-slate-700 w-full py-2 px-4 rounded-lg text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition border border-slate-700">
+                                <i class="fa-solid fa-music text-sky-400"></i> Unduh Audio MP3
+                            </a>
+
+                            <!-- Copy Direct Link Button -->
+                            <button onclick="copyDirectLink()" class="w-full py-1.5 px-3 text-slate-400 hover:text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition">
+                                <i class="fa-regular fa-copy"></i> Salin Link Media
                             </button>
                         </div>
                     </div>
@@ -329,71 +349,35 @@
             </div>
         </section>
 
-        <!-- RECENT DOWNLOADS HISTORY -->
-        <section class="max-w-4xl mx-auto w-full mb-12">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> Riwayat Unduhan Saya
+        <!-- RECENT DOWNLOAD HISTORY -->
+        <section class="max-w-3xl mx-auto w-full mb-10">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock-rotate-left text-sky-400 text-xs"></i> Riwayat PidzStore
                 </h3>
-                <button onclick="clearHistory()" class="text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1">
-                    <i class="fa-solid fa-trash-can"></i> Bersihkan
+                <button onclick="clearHistory()" class="text-[11px] text-slate-500 hover:text-slate-300 transition flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i> Hapus
                 </button>
             </div>
 
-            <div id="history-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <div id="empty-history" class="col-span-full glass-panel p-6 rounded-2xl text-center text-slate-500 text-xs">
-                    Belum ada riwayat unduhan. Mulai dengan menempelkan link di atas!
+            <div id="history-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                <div id="empty-history" class="col-span-full tech-card p-4 rounded-xl text-center text-slate-500 text-xs">
+                    Belum ada riwayat unduhan.
                 </div>
             </div>
         </section>
 
-        <!-- VERCEL API SETTINGS MODAL -->
-        <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-            <div class="glass-panel p-6 rounded-3xl max-w-md w-full border border-blue-500/30 shadow-2xl relative">
-                <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-
-                <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-cyan-400"></i> Keamanan Vercel & API
-                </h3>
-                <p class="text-xs text-slate-400 mb-4">
-                    Konfigurasi cara aplikasi berkomunikasi dengan API Downloader.
-                </p>
-
-                <div class="space-y-4 text-xs">
-                    <div class="p-3 rounded-xl bg-blue-950/50 border border-blue-500/20 text-slate-300">
-                        <p class="font-semibold text-cyan-300 mb-1">Mode Serverless Active</p>
-                        <p class="leading-relaxed">Aplikasi dipasang untuk menggunakan Vercel Serverless Function <code class="bg-black/50 px-1 py-0.5 rounded text-yellow-300">/api/download</code> agar API Key Anda terlindungi saat di-push ke GitHub.</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-slate-300 font-medium mb-1">Kunci API Manual (Sisi Klien/Lokal)</label>
-                        <input type="text" id="custom-api-key" value="PREMIUM04JFHDUDJAISKXNRNDIAKNX" class="w-full glass-input px-3 py-2 rounded-xl text-white text-xs">
-                        <span class="text-[10px] text-slate-500 mt-1 block">Hanya digunakan jika serverless proxy tidak dikonfigurasi.</span>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button onclick="saveSettings()" class="glow-btn px-4 py-2 rounded-xl text-white font-bold text-xs">
-                            Simpan Pengaturan
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- FOOTER -->
-        <footer class="mt-auto py-6 border-t border-white/10 text-center text-xs text-slate-500">
-            <p>© 2026 SkySaver Media Downloader. Multi-platform downloader engine.</p>
+        <!-- FOOTER WITH PIDZSTORE BRANDING -->
+        <footer class="mt-auto py-5 border-t border-slate-800 text-center text-xs text-slate-500 font-medium">
+            <p>© 2026 <span class="text-slate-300 font-bold">PidzStore</span>. All Rights Reserved. Powered by PidzStore Media Engine.</p>
         </footer>
 
     </div>
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
-        // Global State & Endpoints Mapping
         const DEFAULT_API_KEY = "PREMIUM04JFHDUDJAISKXNRNDIAKNX";
         let currentService = null;
         let lastResultUrl = "";
@@ -410,12 +394,32 @@
             capcut: "https://hyerls.my.id/api/capcut.php"
         };
 
-        // Initialize Application
+        // Intro Splash Screen Progress
         window.addEventListener('DOMContentLoaded', () => {
+            const introBar = document.getElementById('intro-bar');
+            const introScreen = document.getElementById('intro-screen');
+
+            setTimeout(() => { if (introBar) introBar.style.width = '50%'; }, 150);
+            setTimeout(() => { if (introBar) introBar.style.width = '100%'; }, 500);
+
+            setTimeout(() => {
+                if (introScreen) {
+                    introScreen.classList.add('fade-out');
+                }
+            }, 900);
+
             loadHistoryUI();
         });
 
-        // Auto-detect Platform from URL input
+        // Extract YouTube Video ID safely
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Auto-detect Platform
         function handleUrlInput() {
             const urlInput = document.getElementById('media-url').value.trim();
             const clearBtn = document.getElementById('clear-btn');
@@ -424,7 +428,7 @@
 
             if (!urlInput) {
                 resetServiceHighlight();
-                updateBadge("Deteksi Otomatis Aktif", "fa-wand-magic-sparkles", "text-cyan-400");
+                updateBadge("Deteksi Otomatis Active", "fa-wand-magic-sparkles", "text-sky-400");
                 return;
             }
 
@@ -434,28 +438,27 @@
                 updateBadge(`Terdeteksi: ${detected.name}`, detected.icon, "text-emerald-400");
             } else {
                 resetServiceHighlight();
-                updateBadge("Platform Tidak Dikenali - Silakan Pilih Manual", "fa-circle-exclamation", "text-amber-400");
+                updateBadge("Platform Tidak Dikenali - Pilih Manual", "fa-circle-exclamation", "text-amber-400");
             }
         }
 
-        // Platform Detection Logic
         function detectPlatform(url) {
             const lower = url.toLowerCase();
-            if (lower.includes('tiktok.com') || lower.includes('vt.tiktok.com')) return { id: 'tiktok', name: 'TikTok', icon: 'fa-brands fa-tiktok' };
-            if (lower.includes('instagram.com') || lower.includes('instagr.am')) return { id: 'instagram', name: 'Instagram', icon: 'fa-brands fa-instagram' };
-            if (lower.includes('youtube.com/shorts')) return { id: 'ytshort', name: 'YouTube Shorts', icon: 'fa-solid fa-bolt-lightning' };
-            if (lower.includes('youtube.com') || lower.includes('youtu.be')) return { id: 'ytmp4', name: 'YouTube Video', icon: 'fa-brands fa-youtube' };
-            if (lower.includes('open.spotify.com')) return { id: 'spotify', name: 'Spotify', icon: 'fa-brands fa-spotify' };
-            if (lower.includes('pin.it') || lower.includes('pinterest.com')) return { id: 'pinterest', name: 'Pinterest', icon: 'fa-brands fa-pinterest' };
-            if (lower.includes('terabox') || lower.includes('1024tera.com')) return { id: 'terabox', name: 'TeraBox', icon: 'fa-solid fa-box-archive' };
-            if (lower.includes('capcut.com')) return { id: 'capcut', name: 'CapCut', icon: 'fa-solid fa-scissors' };
+            if (lower.includes('tiktok.com') || lower.includes('vt.tiktok.com')) return { id: 'tiktok', name: 'TikTok Video', icon: 'fa-brands fa-tiktok' };
+            if (lower.includes('instagram.com') || lower.includes('instagr.am')) return { id: 'instagram', name: 'Instagram Reel', icon: 'fa-brands fa-instagram' };
+            if (lower.includes('youtube.com/shorts')) return { id: 'ytshort', name: 'YouTube Shorts', icon: 'fa-solid fa-bolt' };
+            if (lower.includes('youtube.com') || lower.includes('youtu.be')) return { id: 'ytmp4', name: 'YouTube Video MP4', icon: 'fa-brands fa-youtube' };
+            if (lower.includes('open.spotify.com')) return { id: 'spotify', name: 'Spotify Music', icon: 'fa-brands fa-spotify' };
+            if (lower.includes('pin.it') || lower.includes('pinterest.com')) return { id: 'pinterest', name: 'Pinterest Media', icon: 'fa-brands fa-pinterest' };
+            if (lower.includes('terabox') || lower.includes('1024tera.com')) return { id: 'terabox', name: 'TeraBox Cloud', icon: 'fa-solid fa-box-archive' };
+            if (lower.includes('capcut.com')) return { id: 'capcut', name: 'CapCut Video', icon: 'fa-solid fa-scissors' };
             return null;
         }
 
         function updateBadge(text, icon, colorClass) {
             const badge = document.getElementById('detected-service');
             badge.className = `flex items-center gap-1.5 font-medium ${colorClass}`;
-            badge.innerHTML = `<i class="${icon}"></i> ${text}`;
+            badge.innerHTML = `<i class="${icon} text-xs"></i> ${text}`;
         }
 
         function selectService(serviceId, clearManual = true) {
@@ -464,30 +467,30 @@
             
             const btn = document.getElementById(`service-${serviceId}`);
             if (btn) {
-                btn.classList.add('border-cyan-400', 'bg-blue-600/30', 'shadow-lg', 'shadow-blue-500/20');
+                btn.classList.add('border-sky-500', 'bg-sky-950/50');
             }
 
             const iconMap = {
-                tiktok: 'fa-brands fa-tiktok text-pink-400',
-                instagram: 'fa-brands fa-instagram text-amber-400',
+                tiktok: 'fa-brands fa-tiktok text-slate-200',
+                instagram: 'fa-brands fa-instagram text-slate-200',
                 ytmp4: 'fa-brands fa-youtube text-red-500',
-                ytmp3: 'fa-solid fa-music text-red-400',
-                ytshort: 'fa-solid fa-bolt-lightning text-red-600',
+                ytmp3: 'fa-solid fa-music text-slate-200',
+                ytshort: 'fa-solid fa-bolt text-red-500',
                 spotify: 'fa-brands fa-spotify text-emerald-400',
-                pinterest: 'fa-brands fa-pinterest text-red-400',
-                capcut: 'fa-solid fa-scissors text-cyan-400',
-                terabox: 'fa-solid fa-box-archive text-blue-400'
+                pinterest: 'fa-brands fa-pinterest text-slate-200',
+                capcut: 'fa-solid fa-scissors text-slate-200',
+                terabox: 'fa-solid fa-box-archive text-slate-200'
             };
 
             const platformIcon = document.getElementById('platform-icon');
             if (iconMap[serviceId]) {
-                platformIcon.className = `${iconMap[serviceId]} text-lg`;
+                platformIcon.className = `${iconMap[serviceId]} text-base`;
             }
         }
 
         function resetServiceHighlight() {
             document.querySelectorAll('.service-card').forEach(card => {
-                card.classList.remove('border-cyan-400', 'bg-blue-600/30', 'shadow-lg', 'shadow-blue-500/20');
+                card.classList.remove('border-sky-500', 'bg-sky-950/50');
             });
         }
 
@@ -495,7 +498,7 @@
             document.getElementById('media-url').value = '';
             document.getElementById('clear-btn').classList.add('hidden');
             resetServiceHighlight();
-            updateBadge("Deteksi Otomatis Aktif", "fa-wand-magic-sparkles", "text-cyan-400");
+            updateBadge("Deteksi Otomatis Active", "fa-wand-magic-sparkles", "text-sky-400");
         }
 
         async function pasteClipboard() {
@@ -505,25 +508,20 @@
                 handleUrlInput();
                 showToast("Tautan berhasil ditempel!", "success");
             } catch (err) {
-                showToast("Gagal mengakses papan klip. Tempel secara manual.", "error");
+                showToast("Tempel manual pada kolom teks.", "info");
             }
         }
 
-        // DOWNLOAD CORE LOGIC
         async function startDownload() {
             const urlInput = document.getElementById('media-url').value.trim();
             if (!urlInput) {
-                showToast("Masukkan URL media terlebih dahulu!", "warning");
+                showToast("Silakan masukkan URL media!", "warning");
                 return;
             }
 
             if (!currentService) {
                 const detected = detectPlatform(urlInput);
-                if (detected) {
-                    currentService = detected.id;
-                } else {
-                    currentService = 'tiktok'; // Fallback default
-                }
+                currentService = detected ? detected.id : 'tiktok';
             }
 
             const loadingState = document.getElementById('loading-state');
@@ -534,112 +532,137 @@
             resultSection.classList.add('hidden');
             downloadBtn.disabled = true;
 
-            const apiKey = localStorage.getItem('sky_custom_api_key') || DEFAULT_API_KEY;
-
             try {
                 let responseData = null;
 
-                // Priority 1: Try local Serverless Endpoint /api/download (Vercel)
+                // Priority 1: Vercel Serverless Proxy
                 try {
                     const serverlessRes = await fetch(`/api/download?service=${currentService}&url=${encodeURIComponent(urlInput)}`);
                     if (serverlessRes.ok) {
                         responseData = await serverlessRes.json();
                     }
                 } catch (e) {
-                    // Serverless fallback to direct fetch if running locally without backend
+                    console.log("Serverless proxy fallback to direct endpoint...");
                 }
 
-                // Priority 2: Direct Fetch API
+                // Priority 2: Direct API Call
                 if (!responseData) {
-                    const targetEndpoint = `${ENDPOINTS[currentService]}?key=${apiKey}&url=${encodeURIComponent(urlInput)}`;
+                    const targetEndpoint = `${ENDPOINTS[currentService]}?key=${DEFAULT_API_KEY}&url=${encodeURIComponent(urlInput)}`;
                     const directRes = await fetch(targetEndpoint);
                     responseData = await directRes.json();
                 }
 
                 if (responseData) {
                     parseAndDisplayResult(responseData, currentService, urlInput);
-                    showToast("Media berhasil diambil!", "success");
+                    showToast("Media berhasil diproses oleh PidzStore!", "success");
                 } else {
-                    throw new Error("Gagal mendapatkan respons valid dari peladen.");
+                    throw new Error("Respon tidak valid dari API.");
                 }
 
             } catch (error) {
-                console.error("Download Error:", error);
-                showToast(`Gagal memproses media: ${error.message || 'Periksa koneksi / link'}`, "error");
+                console.error("PidzStore Engine Error:", error);
+                showToast("Gagal memproses media. Periksa koneksi/tautan.", "error");
             } finally {
                 loadingState.classList.add('hidden');
                 downloadBtn.disabled = false;
             }
         }
 
-        // Parse & Render Download Result
         function parseAndDisplayResult(data, service, originalUrl) {
             const resultSection = document.getElementById('result-section');
             const thumbImg = document.getElementById('media-thumb');
             const thumbPlaceholder = document.getElementById('thumb-placeholder');
             const titleEl = document.getElementById('res-title');
             const authorEl = document.getElementById('res-author');
+            const platformTag = document.getElementById('res-platform-tag');
             const videoDlBtn = document.getElementById('btn-dl-video');
+            const altDlBtn = document.getElementById('btn-dl-alt');
             const audioDlBtn = document.getElementById('btn-dl-audio');
             const playerContainer = document.getElementById('player-container');
             const videoPreview = document.getElementById('video-preview');
             const audioPreview = document.getElementById('audio-preview');
 
-            // Reset player states
+            // Reset States
             videoPreview.classList.add('hidden');
             audioPreview.classList.add('hidden');
             playerContainer.classList.add('hidden');
             audioDlBtn.classList.add('hidden');
+            altDlBtn.classList.add('hidden');
 
-            // Extraction strategy based on typical API structure
             let mediaUrl = "";
             let audioUrl = "";
-            let title = "Media Result";
-            let author = "SkySaver User";
+            let title = "";
+            let author = "";
             let thumbnail = "";
 
-            // Handle various JSON schemas
-            const resultObj = data.result || data.data || data;
+            // Unwrap API Structure
+            const resObj = data.result || data.data || data;
 
-            if (typeof resultObj === 'string') {
-                mediaUrl = resultObj;
-            } else if (resultObj) {
-                // Video URLs
-                mediaUrl = resultObj.video || resultObj.url || resultObj.download_url || resultObj.nowatermark || resultObj.mp4 || resultObj.link || (Array.isArray(resultObj) ? resultObj[0] : "");
-                // Audio URLs
-                audioUrl = resultObj.audio || resultObj.mp3 || resultObj.music || "";
-                // Metadata
-                title = resultObj.title || resultObj.caption || resultObj.desc || `${service.toUpperCase()} Downloaded Media`;
-                author = resultObj.author?.nickname || resultObj.author || resultObj.uploader || service;
-                thumbnail = resultObj.thumbnail || resultObj.cover || resultObj.image || "";
+            if (typeof resObj === 'string') {
+                mediaUrl = resObj;
+            } else if (resObj && typeof resObj === 'object') {
+                mediaUrl = resObj.dl_link || resObj.url || resObj.download || resObj.link || resObj.video || resObj.nowatermark || resObj.mp4 || resObj.hd_url || (Array.isArray(resObj) ? resObj[0] : "");
+                audioUrl = resObj.audio || resObj.mp3 || resObj.music || resObj.audio_url || "";
+                title = resObj.title || resObj.caption || resObj.desc || resObj.name || "";
+                author = resObj.author?.nickname || resObj.author || resObj.uploader || resObj.channel || resObj.artist || "";
+                thumbnail = resObj.thumbnail || resObj.thumb || resObj.cover || resObj.image || resObj.img || "";
             }
 
-            // Fallback for direct download link
-            if (!mediaUrl && audioUrl) {
-                mediaUrl = audioUrl;
+            // Fallback YT Extraction
+            const ytId = extractYouTubeId(originalUrl);
+            if (ytId) {
+                if (!thumbnail) {
+                    thumbnail = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                }
+                if (!title || title === "Media Result") {
+                    title = resObj?.title || `YouTube Media (${ytId})`;
+                }
+                if (!author) {
+                    author = resObj?.channel || "YouTube";
+                }
             }
+
+            if (!title) title = `PidzStore ${service.toUpperCase()} Media`;
+            if (!author) author = `PidzStore Engine`;
+            if (!mediaUrl && audioUrl) mediaUrl = audioUrl;
 
             lastResultUrl = mediaUrl || originalUrl;
 
-            // Render Metadata
+            // Render Text
             titleEl.textContent = title;
             authorEl.querySelector('span').textContent = author;
+            platformTag.textContent = service.toUpperCase();
 
+            // Render Thumbnail
             if (thumbnail) {
                 thumbImg.src = thumbnail;
-                thumbImg.classList.remove('hidden');
-                thumbPlaceholder.classList.add('hidden');
+                thumbImg.onload = () => {
+                    thumbImg.classList.remove('hidden');
+                    thumbPlaceholder.classList.add('hidden');
+                };
+                thumbImg.onerror = () => {
+                    thumbImg.classList.add('hidden');
+                    thumbPlaceholder.classList.remove('hidden');
+                };
             } else {
                 thumbImg.classList.add('hidden');
                 thumbPlaceholder.classList.remove('hidden');
             }
 
-            // Set Download Button Links
+            // Configure Download Buttons
             videoDlBtn.href = mediaUrl;
+            videoDlBtn.setAttribute('download', '');
+
             if (service === 'spotify' || service === 'ytmp3') {
                 videoDlBtn.innerHTML = `<i class="fa-solid fa-music"></i> Unduh Lagu MP3`;
             } else {
-                videoDlBtn.innerHTML = `<i class="fa-solid fa-download"></i> Unduh Video (Tanpa Watermark)`;
+                videoDlBtn.innerHTML = `<i class="fa-solid fa-download"></i> Unduh Video MP4`;
+            }
+
+            // Alternative Link Button for YT MP4 Direct Download
+            if (service === 'ytmp4' || service === 'ytshort') {
+                altDlBtn.href = mediaUrl;
+                altDlBtn.classList.remove('hidden');
             }
 
             if (audioUrl && service !== 'ytmp3' && service !== 'spotify') {
@@ -647,8 +670,8 @@
                 audioDlBtn.classList.remove('hidden');
             }
 
-            // Inline Media Players
-            if (mediaUrl && (service === 'tiktok' || service === 'instagram' || service === 'ytmp4' || service === 'ytshort' || service === 'capcut')) {
+            // Handle Video Preview for supported direct mp4 sources
+            if (mediaUrl && (service === 'tiktok' || service === 'instagram' || service === 'capcut')) {
                 videoPreview.src = mediaUrl;
                 videoPreview.classList.remove('hidden');
                 playerContainer.classList.remove('hidden');
@@ -661,7 +684,7 @@
             resultSection.classList.remove('hidden');
             resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-            // Save to LocalStorage History
+            // Save History
             saveToHistory({
                 service,
                 title,
@@ -673,35 +696,34 @@
         function copyDirectLink() {
             if (!lastResultUrl) return;
             navigator.clipboard.writeText(lastResultUrl);
-            showToast("Tautan langsung berhasil disalin!", "info");
+            showToast("Link media berhasil disalin!", "info");
         }
 
-        // History Storage Logic
         function saveToHistory(item) {
-            let history = JSON.parse(localStorage.getItem('sky_download_history') || '[]');
+            let history = JSON.parse(localStorage.getItem('pidz_download_history') || '[]');
             history.unshift(item);
             if (history.length > 6) history.pop();
-            localStorage.setItem('sky_download_history', JSON.stringify(history));
+            localStorage.setItem('pidz_download_history', JSON.stringify(history));
             loadHistoryUI();
         }
 
         function loadHistoryUI() {
-            const history = JSON.parse(localStorage.getItem('sky_download_history') || '[]');
+            const history = JSON.parse(localStorage.getItem('pidz_download_history') || '[]');
             const historyList = document.getElementById('history-list');
             
             if (history.length === 0) {
-                historyList.innerHTML = `<div class="col-span-full glass-panel p-6 rounded-2xl text-center text-slate-500 text-xs">Belum ada riwayat unduhan.</div>`;
+                historyList.innerHTML = `<div class="col-span-full tech-card p-4 rounded-xl text-center text-slate-500 text-xs">Belum ada riwayat unduhan di PidzStore.</div>`;
                 return;
             }
 
             historyList.innerHTML = history.map(item => `
-                <div class="glass-panel p-3 rounded-2xl flex items-center justify-between gap-3 hover:bg-white/10 transition">
+                <div class="tech-card p-2.5 rounded-xl flex items-center justify-between gap-2 border border-slate-800">
                     <div class="overflow-hidden">
-                        <span class="text-[10px] uppercase font-bold text-cyan-400">${item.service}</span>
+                        <span class="text-[9px] font-bold uppercase text-sky-400 tracking-wider">${item.service}</span>
                         <p class="text-xs font-semibold text-white truncate">${item.title}</p>
                         <span class="text-[10px] text-slate-500">${item.date}</span>
                     </div>
-                    <a href="${item.url}" target="_blank" download class="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500 text-cyan-300 hover:text-white transition text-xs">
+                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" download class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition text-xs flex-shrink-0">
                         <i class="fa-solid fa-download"></i>
                     </a>
                 </div>
@@ -709,58 +731,35 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('sky_download_history');
+            localStorage.removeItem('pidz_download_history');
             loadHistoryUI();
-            showToast("Riwayat unduhan dibersihkan.", "info");
+            showToast("Riwayat berhasil dihapus.", "info");
         }
 
-        // Toast Notification Function
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             
-            const bgMap = {
-                success: 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200',
-                error: 'bg-red-950/90 border-red-500/50 text-red-200',
-                warning: 'bg-amber-950/90 border-amber-500/50 text-amber-200',
-                info: 'bg-blue-950/90 border-blue-500/50 text-cyan-200'
-            };
-
             const iconMap = {
                 success: 'fa-circle-check text-emerald-400',
                 error: 'fa-circle-xmark text-red-400',
                 warning: 'fa-triangle-exclamation text-amber-400',
-                info: 'fa-circle-info text-cyan-400'
+                info: 'fa-circle-info text-sky-400'
             };
 
-            toast.className = `glass-panel px-4 py-3 rounded-2xl border text-xs font-semibold flex items-center gap-2.5 shadow-2xl transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto ${bgMap[type]}`;
+            toast.className = `tech-card px-3.5 py-2.5 rounded-xl border border-slate-800 text-xs font-semibold text-slate-200 flex items-center gap-2 shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto`;
             toast.innerHTML = `<i class="fa-solid ${iconMap[type]} text-sm"></i> <span>${message}</span>`;
 
             container.appendChild(toast);
 
             setTimeout(() => {
-                toast.classList.remove('translate-y-4', 'opacity-0');
+                toast.classList.remove('translate-y-2', 'opacity-0');
             }, 10);
 
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
-
-        // Modal Handlers
-        function toggleSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.toggle('hidden');
-        }
-
-        function saveSettings() {
-            const key = document.getElementById('custom-api-key').value.trim();
-            if (key) {
-                localStorage.setItem('sky_custom_api_key', key);
-                showToast("Pengaturan API disimpan!", "success");
-                toggleSettingsModal();
-            }
+            }, 3000);
         }
     </script>
 </body>
