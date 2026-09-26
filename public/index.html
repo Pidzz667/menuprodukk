@@ -146,7 +146,7 @@
             </div>
 
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-sans text-white mb-1">
-                PidzStore <span class="text-sky-400">Media Engine v3.0</span>
+                PidzStore <span class="text-sky-400">Media Engine v3.1</span>
             </h1>
             <p class="text-slate-400 text-xs sm:text-sm font-medium tracking-wide mb-8">
                 Universal Multi-Threaded Media Downloader
@@ -187,13 +187,13 @@
         <!-- HERO SECTION -->
         <section class="text-center my-4 sm:my-8">
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-950/60 border border-sky-500/30 text-sky-300 text-xs font-semibold mb-4 backdrop-blur-md">
-                <i class="fa-solid fa-bolt text-amber-400"></i> Multi-Proxy CORS Bypass & Real Extractor Active
+                <i class="fa-solid fa-bolt text-amber-400"></i> Multi-Proxy CORS Bypass & Timeout Protection Active
             </div>
             <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
                 Unduh Video HD & Audio <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400">Tanpa Watermark</span>
             </h2>
             <p class="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm leading-relaxed">
-                Mendukung TikTok, Instagram Reels, YouTube HD/MP3, Spotify, CapCut, Pinterest, & TeraBox dengan ekstrak langsung tanpa error.
+                Mendukung TikTok, Instagram Reels, YouTube HD/MP3, Spotify, CapCut, Pinterest, & TeraBox dengan ekstrak cepat dan anti-hang.
             </p>
         </section>
 
@@ -233,7 +233,7 @@
                     <span id="detected-service" class="flex items-center gap-2 font-medium text-sky-400">
                         <i class="fa-solid fa-radar text-xs animate-spin"></i> Mode Deteksi Otomatis Aktif
                     </span>
-                    <span class="text-slate-500 text-[11px] font-mono">Engine: PidzStore Ultra v3.0</span>
+                    <span class="text-slate-500 text-[11px] font-mono">Engine: PidzStore Ultra v3.1</span>
                 </div>
             </div>
         </section>
@@ -301,13 +301,26 @@
             </div>
         </section>
 
-        <!-- PROCESSING LOG MODAL / CARD -->
+        <!-- PROCESSING LOG MODAL -->
         <div id="processing-modal" class="hidden max-w-2xl mx-auto w-full my-6">
             <div class="glass-card p-6 rounded-3xl border border-sky-500/30 relative overflow-hidden">
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-2xl bg-sky-950 border border-sky-400/40 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-950 border border-sky-400/40 flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-gear text-sky-400 text-xl animate-spin"></i>
                     </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-white font-sans" id="proc-step-title">Menganalisis Tautan...</h3>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-2 border border-slate-700/50">
+                            <div id="proc-bar" class="h-full bg-sky-400 transition-all duration-300 w-0"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="proc-console" class="bg-slate-950/90 rounded-2xl p-3 text-[11px] font-mono h-28 overflow-y-auto border border-slate-800 space-y-1 text-slate-400">
+                    <p class="text-sky-400">&gt; Menyiapkan PidzEngine Multi-Thread...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- ERROR / NOTIFICATION MODAL -->
         <div id="error-modal" class="hidden max-w-2xl mx-auto w-full my-6">
             <div class="glass-card p-6 rounded-3xl border border-rose-500/40 relative overflow-hidden bg-rose-950/20">
@@ -340,9 +353,6 @@
                             TIKTOK ENGINE
                         </span>
                     </div>
-                    <span id="fallback-indicator" class="hidden text-[11px] font-mono text-amber-400 flex items-center gap-1">
-                        <i class="fa-solid fa-shield-halved"></i> Fallback Stream Active
-                    </span>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-6">
@@ -392,19 +402,19 @@
 
                             <!-- Format/Quality Selection Tabs -->
                             <div class="space-y-2 pt-2 border-t border-slate-800">
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pilih Format & Kualitas</p>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Format Tersedia</p>
                                 <div class="grid grid-cols-2 gap-2" id="format-options">
                                     <button class="p-2.5 rounded-xl bg-sky-950/70 border border-sky-500/50 text-left hover:bg-sky-900/50 transition">
                                         <div class="flex justify-between items-center text-xs font-bold text-white">
-                                            <span>MP4 HD 1080p</span>
+                                            <span>MP4 Ultra HD</span>
                                             <span class="text-[10px] text-emerald-400 font-mono">No WM</span>
                                         </div>
-                                        <span class="text-[10px] text-slate-400">High Bitrate Video</span>
+                                        <span class="text-[10px] text-slate-400">High Speed Stream</span>
                                     </button>
                                     <button class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left hover:bg-slate-800 transition">
                                         <div class="flex justify-between items-center text-xs font-bold text-white">
-                                            <span>MP3 320kbps</span>
-                                            <span class="text-[10px] text-sky-400 font-mono">Audio</span>
+                                            <span>Audio Original</span>
+                                            <span class="text-[10px] text-sky-400 font-mono">MP3/AAC</span>
                                         </div>
                                         <span class="text-[10px] text-slate-400">HQ Audio Track</span>
                                     </button>
@@ -421,7 +431,7 @@
 
                             <div class="grid grid-cols-2 gap-2">
                                 <a id="btn-dl-video" href="#" target="_blank" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-700">
-                                    <i class="fa-solid fa-up-right-from-square text-sky-400"></i> Buka Link Server 1
+                                    <i class="fa-solid fa-up-right-from-square text-sky-400"></i> Buka Link Server
                                 </a>
                                 <button onclick="copyDirectLink()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-700">
                                     <i class="fa-regular fa-copy text-sky-400"></i> Salin URL Media
@@ -521,6 +531,23 @@
             'https://api.codetabs.com/v1/proxy?quest='
         ];
 
+        // Fetch with strict timeout helper to prevent stuck loading
+        async function fetchWithTimeout(resource, options = {}, timeout = 7000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(resource, {
+                    ...options,
+                    signal: controller.signal
+                });
+                clearTimeout(id);
+                return response;
+            } catch (err) {
+                clearTimeout(id);
+                throw err;
+            }
+        }
+
         let currentService = null;
         let lastResultData = null;
 
@@ -558,7 +585,7 @@
                     introScreen.style.opacity = '0';
                     setTimeout(() => introScreen.style.display = 'none', 700);
                 }
-            }, 1300);
+            }, 1200);
         });
 
         function detectPlatform(url) {
@@ -652,8 +679,9 @@
             }
         }
 
-        async function logConsole(msg, isHighlight = false) {
+        function logConsole(msg, isHighlight = false) {
             const consoleEl = document.getElementById('proc-console');
+            if (!consoleEl) return;
             const p = document.createElement('p');
             p.className = isHighlight ? 'text-sky-400 font-bold' : 'text-slate-300';
             p.innerHTML = `&gt; ${msg}`;
@@ -694,28 +722,28 @@
 
             procModal.classList.remove('hidden');
             resultSection.classList.add('hidden');
-            consoleEl.innerHTML = '';
-
-            // Step 1
-            procBar.style.width = '25%';
-            procStepTitle.textContent = "Langkah 1/4: Menganalisis URL Target...";
-            await logConsole(`Memeriksa URL: ${urlInput.substring(0, 45)}...`);
-            await new Promise(r => setTimeout(r, 300));
-
-            // Step 2
-            procBar.style.width = '50%';
-            procStepTitle.textContent = "Langkah 2/4: Mengaktifkan Multi-Proxy Engine...";
-            await logConsole(`Membuka handshake jalur CORS Proxy...`);
-            await new Promise(r => setTimeout(r, 300));
-
-            // Step 3
-            procBar.style.width = '75%';
-            procStepTitle.textContent = "Langkah 3/4: Mengekstrak Stream Media...";
-            await logConsole(`Proses ekstrasi direct MP4/MP3 media URL...`, true);
+            if (consoleEl) consoleEl.innerHTML = '';
 
             let mediaData = null;
 
             try {
+                // Step 1
+                if (procBar) procBar.style.width = '25%';
+                if (procStepTitle) procStepTitle.textContent = "Langkah 1/4: Menganalisis URL Target...";
+                logConsole(`Memeriksa URL: ${urlInput.substring(0, 45)}...`);
+                await new Promise(r => setTimeout(r, 200));
+
+                // Step 2
+                if (procBar) procBar.style.width = '50%';
+                if (procStepTitle) procStepTitle.textContent = "Langkah 2/4: Mengaktifkan Multi-Proxy Engine...";
+                logConsole(`Menghubungkan ke API server PidzStore...`);
+                await new Promise(r => setTimeout(r, 200));
+
+                // Step 3
+                if (procBar) procBar.style.width = '75%';
+                if (procStepTitle) procStepTitle.textContent = "Langkah 3/4: Mengekstrak Stream Media...";
+                logConsole(`Proses ekstraksi direct URL...`, true);
+
                 if (currentService === 'tiktok') {
                     mediaData = await extractTikTok(urlInput);
                 } else if (currentService === 'ytmp4' || currentService === 'ytmp3' || currentService === 'ytshort') {
@@ -732,35 +760,32 @@
                     mediaData = await extractUniversalOpenGraph(urlInput);
                 }
             } catch (err) {
-                console.error("Extraction failed:", err);
+                console.error("Extraction error:", err);
+                logConsole(`Terjadi kesalahan jaringan: ${err.message || 'Timeout'}`);
+            } finally {
+                // Ensure processing modal hides no matter what
+                procModal.classList.add('hidden');
             }
 
             if (!mediaData || !mediaData.mediaUrl) {
-                procModal.classList.add('hidden');
                 showErrorModal(
                     "Gagal Mengekstrak Media", 
-                    "Sistem tidak dapat mengambil file video/audio dari tautan tersebut. Pastikan tautan bersifat publik dan tidak diproteksi/login."
+                    "Sistem tidak dapat mengambil file video/audio dari tautan tersebut atau server sumber sedang membatasi akses. Silakan coba tautan publik lain."
                 );
-                showToast("Ekstraksi gagal, periksa tautan kembali.", "error");
+                showToast("Ekstraksi gagal atau dibatasi.", "error");
                 return;
             }
 
-            // Step 4 Complete
-            procBar.style.width = '100%';
-            procStepTitle.textContent = "Langkah 4/4: Media Berhasil Disiapkan!";
-            await logConsole(`Ekstraksi sukses! Menyiapkan pemutar media...`, true);
-            await new Promise(r => setTimeout(r, 300));
-
-            procModal.classList.add('hidden');
             displayValidatedResult(mediaData, currentService);
             showToast("Media berhasil diekstrak!", "success");
         }
 
         // TIKTOK ENGINE
         async function extractTikTok(url) {
-            // Method 1: TiklyDown Public API
+            // API 1: TiklyDown Public API
             try {
-                const res = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
+                logConsole("Menghubungkan ke TiklyDown Engine...");
+                const res = await fetchWithTimeout(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`, {}, 6000);
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.video) {
@@ -773,13 +798,14 @@
                         };
                     }
                 }
-            } catch (e) { console.warn("TiklyDown failed", e); }
+            } catch (e) { logConsole("TiklyDown timeout/error, mencoba fallback proxy..."); }
 
-            // Method 2: TikWM via CORS Proxy
+            // API 2: TikWM Proxy
             for (const proxy of CORS_PROXIES) {
                 try {
+                    logConsole("Menghubungkan ke TikWM Engine via Proxy...");
                     const apiUrl = `${proxy}${encodeURIComponent(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`)}`;
-                    const res = await fetch(apiUrl);
+                    const res = await fetchWithTimeout(apiUrl, {}, 6000);
                     if (res.ok) {
                         const json = await res.json();
                         const data = json.data || (typeof json === 'string' ? JSON.parse(json).data : null);
@@ -793,14 +819,13 @@
                             };
                         }
                     }
-                } catch (e) { console.warn("TikWM proxy failed", e); }
+                } catch (e) {}
             }
             return null;
         }
 
-        // YOUTUBE & SHORTS ENGINE (Piped & Invidious APIs)
+        // YOUTUBE & SHORTS ENGINE
         async function extractYouTube(url, isAudioOnly = false) {
-            // Extract Video ID
             let videoId = "";
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -818,7 +843,8 @@
 
             for (const inst of PIPED_INSTANCES) {
                 try {
-                    const res = await fetch(`${inst}/streams/${videoId}`);
+                    logConsole(`Menghubungkan ke YouTube Stream (${inst.split('//')[1]})...`);
+                    const res = await fetchWithTimeout(`${inst}/streams/${videoId}`, {}, 5000);
                     if (res.ok) {
                         const data = await res.json();
                         if (data) {
@@ -843,36 +869,18 @@
                             }
                         }
                     }
-                } catch (e) { console.warn("Piped instance failed", e); }
+                } catch (e) {}
             }
-
-            // Invidious Backup API
-            try {
-                const invRes = await fetch(`https://inv.tux.pizza/api/v1/videos/${videoId}`);
-                if (invRes.ok) {
-                    const invData = await invRes.json();
-                    if (invData && invData.formatStreams) {
-                        const stream = invData.formatStreams.reverse()[0];
-                        return {
-                            mediaUrl: stream.url,
-                            audioUrl: "",
-                            title: invData.title || "YouTube Stream",
-                            author: invData.author || "YouTube Creator",
-                            thumbnail: invData.videoThumbnails?.[0]?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
-                        };
-                    }
-                }
-            } catch (e) { console.warn("Invidious failed", e); }
 
             return null;
         }
 
         // INSTAGRAM ENGINE
         async function extractInstagram(url) {
-            // OpenGraph Parsing via CORS Proxy
             for (const proxy of CORS_PROXIES) {
                 try {
-                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    logConsole("Scraping metadata Instagram...");
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const parser = new DOMParser();
@@ -893,7 +901,7 @@
                             };
                         }
                     }
-                } catch (e) { console.warn("IG proxy scrape failed", e); }
+                } catch (e) {}
             }
             return null;
         }
@@ -902,7 +910,8 @@
         async function extractPinterest(url) {
             for (const proxy of CORS_PROXIES) {
                 try {
-                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    logConsole("Scraping metadata Pinterest...");
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const parser = new DOMParser();
@@ -923,7 +932,7 @@
                             };
                         }
                     }
-                } catch (e) { console.warn("Pinterest scrape failed", e); }
+                } catch (e) {}
             }
             return null;
         }
@@ -932,7 +941,8 @@
         async function extractCapCut(url) {
             for (const proxy of CORS_PROXIES) {
                 try {
-                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    logConsole("Mengekstrak file CapCut...");
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const videoMatch = html.match(/https?:\/\/[^"]+\.(mp4)[^"]*/i);
@@ -947,24 +957,23 @@
                             };
                         }
                     }
-                } catch (e) { console.warn("CapCut proxy failed", e); }
+                } catch (e) {}
             }
             return null;
         }
 
         // SPOTIFY ENGINE
         async function extractSpotify(url) {
-            // Search track info & route to YouTube Audio Stream
             for (const proxy of CORS_PROXIES) {
                 try {
-                    const res = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    logConsole("Mencari trek audio Spotify...");
+                    const res = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
                     if (res.ok) {
                         const html = await res.text();
                         const titleMatch = html.match(/<title>(.*?)<\/title>/i)?.[1] || "Spotify Track";
                         const cleanQuery = titleMatch.replace("- song and lyrics by", "").replace("| Spotify", "").trim();
                         
-                        // Search audio on Piped
-                        const searchRes = await fetch(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(cleanQuery)}&filter=music_songs`);
+                        const searchRes = await fetchWithTimeout(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(cleanQuery)}&filter=music_songs`, {}, 6000);
                         if (searchRes.ok) {
                             const searchData = await searchRes.json();
                             if (searchData.items && searchData.items[0]) {
@@ -972,7 +981,7 @@
                             }
                         }
                     }
-                } catch (e) { console.warn("Spotify search failed", e); }
+                } catch (e) {}
             }
             return null;
         }
@@ -981,7 +990,8 @@
         async function extractUniversalOpenGraph(url) {
             for (const proxy of CORS_PROXIES) {
                 try {
-                    const htmlRes = await fetch(`${proxy}${encodeURIComponent(url)}`);
+                    logConsole("Mencari Stream Media Universal...");
+                    const htmlRes = await fetchWithTimeout(`${proxy}${encodeURIComponent(url)}`, {}, 6000);
                     if (htmlRes.ok) {
                         const html = await htmlRes.text();
                         const parser = new DOMParser();
