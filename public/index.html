@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkySaver - By Pidz Store</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0066ff',
+                            600: '#0252cc',
+                            700: '#003eb3',
+                            800: '#0a2e8c',
+                            900: '#091e56',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(0, 102, 255, 0.4)' },
+                            '100%': { boxShadow: '0 0 30px rgba(0, 229, 255, 0.8)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #070d1e 0%, #0a1936 35%, #082859 70%, #031338 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-input {
+            background: rgba(2, 12, 32, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .glass-input:focus-within {
+            border-color: #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-btn {
+            background: linear-gradient(135deg, #0066ff 0%, #00c6ff 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glow-btn:hover {
+            box-shadow: 0 0 25px rgba(0, 198, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 25, 54, 0.8);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.8);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+
+    <!-- Background Animated Blobs -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute top-1/3 -right-32 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col min-h-screen">
+
+        <!-- HEADER / NAVBAR -->
+        <header class="flex items-center justify-between py-4 mb-8 border-b border-white/10">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid font-bold fa-cloud-arrow-down text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                        SkySaver <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-cyan-300">PRO v2.0</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Universal HD Media Downloader</p>
+                </div>
+            </div>
+
+            <!-- Serverless Proxy Status Indicator -->
+            <div class="hidden sm:flex items-center gap-3">
+                <div class="glass-panel px-3 py-1.5 rounded-full text-xs flex items-center gap-2 border border-blue-500/20">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span class="text-slate-300 font-medium">Serverless API Connected</span>
+                </div>
+                <button onclick="toggleSettingsModal()" class="glass-panel p-2.5 rounded-xl hover:bg-white/10 transition text-slate-300 hover:text-white" title="Pengaturan API">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="text-center my-6">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-4 animate-float">
+                <i class="fa-solid fa-bolt text-yellow-400"></i> Unduh Tanpa Watermark & Kualitas Tinggi
+            </div>
+            <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-3">
+                Unduh Video & Audio <br class="hidden sm:inline"> Dari <span class="gradient-text">Semua Platform</span>
+            </h2>
+            <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
+                Tempelkan tautan dari TikTok, Instagram, YouTube, Spotify, Pinterest, TeraBox, atau CapCut.
+            </p>
+        </section>
+
+        <!-- INPUT FORM SECTION -->
+        <section class="max-w-3xl mx-auto w-full mb-10">
+            <div class="glass-panel p-3 sm:p-4 rounded-3xl shadow-2xl relative">
+                
+                <!-- URL Input Group -->
+                <div class="glass-input rounded-2xl flex flex-col sm:flex-row items-center p-2 gap-2 transition-all">
+                    
+                    <div class="flex items-center w-full px-3 py-2 gap-3">
+                        <i id="platform-icon" class="fa-solid fa-link text-cyan-400 text-lg"></i>
+                        <input type="text" 
+                               id="media-url" 
+                               placeholder="Tempel tautan video/musik di sini..." 
+                               class="w-full bg-transparent text-white placeholder-slate-500 focus:outline-none text-sm sm:text-base"
+                               autocomplete="off"
+                               oninput="handleUrlInput()">
+                        
+                        <button id="clear-btn" onclick="clearInput()" class="hidden text-slate-400 hover:text-white p-1">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button onclick="pasteClipboard()" type="button" class="px-3 py-2.5 rounded-xl glass-panel text-slate-300 hover:text-white text-xs font-semibold hover:bg-white/10 transition flex items-center gap-1.5 w-full sm:w-auto justify-center">
+                            <i class="fa-regular fa-paste"></i> Tempel
+                        </button>
+                        
+                        <button id="download-btn" onclick="startDownload()" class="glow-btn px-6 py-2.5 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 w-full sm:w-auto min-w-[130px]">
+                            <i class="fa-solid fa-arrow-down font-black"></i> Process
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Auto Detection Badge -->
+                <div id="detection-badge" class="mt-3 px-2 flex items-center justify-between text-xs text-slate-400 min-h-[24px]">
+                    <span id="detected-service" class="flex items-center gap-1.5 font-medium text-cyan-400">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Deteksi Otomatis Aktif
+                    </span>
+                    <span class="hidden sm:inline text-slate-500">Format: MP4 / MP3 HD</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLATFORM TABS / SUPPORTED SERVICES -->
+        <section class="max-w-4xl mx-auto w-full mb-10">
+            <p class="text-center text-xs uppercase tracking-widest text-slate-400 font-bold mb-4">Platform Didukung</p>
+            
+            <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-3">
+                <!-- TikTok -->
+                <button onclick="selectService('tiktok')" id="service-tiktok" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-brands fa-tiktok text-xl text-pink-500 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">TikTok</span>
+                </button>
+                
+                <!-- Instagram -->
+                <button onclick="selectService('instagram')" id="service-instagram" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-brands fa-instagram text-xl text-amber-500 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">Instagram</span>
+                </button>
+
+                <!-- YouTube MP4 -->
+                <button onclick="selectService('ytmp4')" id="service-ytmp4" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-brands fa-youtube text-xl text-red-500 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">YT MP4</span>
+                </button>
+
+                <!-- YouTube MP3 -->
+                <button onclick="selectService('ytmp3')" id="service-ytmp3" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-solid fa-music text-xl text-red-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">YT MP3</span>
+                </button>
+
+                <!-- YT Shorts -->
+                <button onclick="selectService('ytshort')" id="service-ytshort" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-solid fa-bolt-lightning text-xl text-red-600 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">Shorts</span>
+                </button>
+
+                <!-- Spotify -->
+                <button onclick="selectService('spotify')" id="service-spotify" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-brands fa-spotify text-xl text-emerald-500 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">Spotify</span>
+                </button>
+
+                <!-- Pinterest -->
+                <button onclick="selectService('pinterest')" id="service-pinterest" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-brands fa-pinterest text-xl text-red-500 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">Pinterest</span>
+                </button>
+
+                <!-- CapCut -->
+                <button onclick="selectService('capcut')" id="service-capcut" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-solid fa-scissors text-xl text-cyan-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">CapCut</span>
+                </button>
+
+                <!-- TeraBox -->
+                <button onclick="selectService('terabox')" id="service-terabox" class="service-card glass-panel p-3 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-white/10 transition group border-2 border-transparent">
+                    <i class="fa-solid fa-box-archive text-xl text-blue-400 group-hover:scale-110 transition"></i>
+                    <span class="text-[11px] font-medium text-slate-300">TeraBox</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- LOADING SKELETON -->
+        <div id="loading-state" class="hidden max-w-3xl mx-auto w-full my-6">
+            <div class="glass-panel p-6 rounded-3xl text-center flex flex-col items-center justify-center gap-4">
+                <div class="relative w-16 h-16 flex items-center justify-center">
+                    <div class="absolute inset-0 border-4 border-blue-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+                    <i class="fa-solid fa-cloud-arrow-down text-cyan-400 animate-pulse"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">Mengekstrak Media...</h3>
+                    <p class="text-xs text-slate-400">Menghubungkan ke API peladen dan menyiapkan berkas media.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT CARD SECTION -->
+        <section id="result-section" class="hidden max-w-3xl mx-auto w-full mb-10">
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl border border-cyan-500/30 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl"></div>
+
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    
+                    <!-- Media Preview Container (Video / Image / Audio Cover) -->
+                    <div class="w-full md:w-64 flex-shrink-0 flex flex-col items-center">
+                        <div id="preview-box" class="w-full aspect-video md:aspect-square bg-slate-900/80 rounded-2xl overflow-hidden border border-white/10 shadow-lg relative flex items-center justify-center">
+                            <img id="media-thumb" src="" alt="Thumbnail" class="w-full h-full object-cover hidden">
+                            <div id="thumb-placeholder" class="text-slate-600 flex flex-col items-center gap-2">
+                                <i class="fa-solid fa-file-video text-3xl"></i>
+                                <span class="text-xs">Preview Media</span>
+                            </div>
+                        </div>
+
+                        <!-- Embedded Player when available -->
+                        <div id="player-container" class="w-full mt-3 hidden">
+                            <!-- Video Player -->
+                            <video id="video-preview" controls class="w-full rounded-xl hidden bg-black border border-blue-500/30 max-h-48"></video>
+                            <!-- Audio Player -->
+                            <audio id="audio-preview" controls class="w-full hidden mt-2"></audio>
+                        </div>
+                    </div>
+
+                    <!-- Media Info & Download Buttons -->
+                    <div class="flex-1 w-full space-y-4">
+                        <div>
+                            <div id="res-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-cyan-300 text-xs font-semibold mb-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400"></i> Berhasil Ditemukan
+                            </div>
+                            <h3 id="res-title" class="text-lg font-bold text-white line-clamp-2 leading-snug">
+                                Media Berhasil Diproses
+                            </h3>
+                            <p id="res-author" class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                                <i class="fa-regular fa-user"></i> <span>Uploader Media</span>
+                            </p>
+                        </div>
+
+                        <!-- Download Action Buttons Grid -->
+                        <div id="download-actions" class="space-y-2 pt-2 border-t border-white/10">
+                            <!-- Main Video Download Button -->
+                            <a id="btn-dl-video" href="#" target="_blank" download class="glow-btn w-full py-3 px-4 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-download"></i> Unduh Video (HD Tanpa Watermark)
+                            </a>
+
+                            <!-- Alternative Audio Download Button -->
+                            <a id="btn-dl-audio" href="#" target="_blank" download class="hidden glass-panel w-full py-2.5 px-4 rounded-xl text-slate-200 hover:text-white font-semibold text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition border border-cyan-500/30">
+                                <i class="fa-solid fa-music text-cyan-400"></i> Unduh Audio MP3
+                            </a>
+
+                            <!-- Secondary Copy Direct Link Button -->
+                            <button onclick="copyDirectLink()" class="glass-panel w-full py-2 px-4 rounded-xl text-slate-400 hover:text-slate-200 font-medium text-xs flex items-center justify-center gap-2 transition">
+                                <i class="fa-regular fa-copy"></i> Salin Direct Link Media
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- RECENT DOWNLOADS HISTORY -->
+        <section class="max-w-4xl mx-auto w-full mb-12">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> Riwayat Unduhan Saya
+                </h3>
+                <button onclick="clearHistory()" class="text-xs text-slate-400 hover:text-red-400 transition flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i> Bersihkan
+                </button>
+            </div>
+
+            <div id="history-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div id="empty-history" class="col-span-full glass-panel p-6 rounded-2xl text-center text-slate-500 text-xs">
+                    Belum ada riwayat unduhan. Mulai dengan menempelkan link di atas!
+                </div>
+            </div>
+        </section>
+
+        <!-- VERCEL API SETTINGS MODAL -->
+        <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="glass-panel p-6 rounded-3xl max-w-md w-full border border-blue-500/30 shadow-2xl relative">
+                <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+
+                <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-cyan-400"></i> Keamanan Vercel & API
+                </h3>
+                <p class="text-xs text-slate-400 mb-4">
+                    Konfigurasi cara aplikasi berkomunikasi dengan API Downloader.
+                </p>
+
+                <div class="space-y-4 text-xs">
+                    <div class="p-3 rounded-xl bg-blue-950/50 border border-blue-500/20 text-slate-300">
+                        <p class="font-semibold text-cyan-300 mb-1">Mode Serverless Active</p>
+                        <p class="leading-relaxed">Aplikasi dipasang untuk menggunakan Vercel Serverless Function <code class="bg-black/50 px-1 py-0.5 rounded text-yellow-300">/api/download</code> agar API Key Anda terlindungi saat di-push ke GitHub.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1">Kunci API Manual (Sisi Klien/Lokal)</label>
+                        <input type="text" id="custom-api-key" value="PREMIUM04JFHDUDJAISKXNRNDIAKNX" class="w-full glass-input px-3 py-2 rounded-xl text-white text-xs">
+                        <span class="text-[10px] text-slate-500 mt-1 block">Hanya digunakan jika serverless proxy tidak dikonfigurasi.</span>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button onclick="saveSettings()" class="glow-btn px-4 py-2 rounded-xl text-white font-bold text-xs">
+                            Simpan Pengaturan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="mt-auto py-6 border-t border-white/10 text-center text-xs text-slate-500">
+            <p>© 2026 SkySaver Media Downloader. Multi-platform downloader engine.</p>
+        </footer>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Global State & Endpoints Mapping
+        const DEFAULT_API_KEY = "PREMIUM04JFHDUDJAISKXNRNDIAKNX";
+        let currentService = null;
+        let lastResultUrl = "";
+
+        const ENDPOINTS = {
+            spotify: "https://hyerls.my.id/api/spotify.php",
+            pinterest: "https://hyerls.my.id/api/pintv1.php",
+            terabox: "https://hyerls.my.id/api/terabox.php",
+            ytmp4: "https://hyerls.my.id/api/ytmp4.php",
+            ytmp3: "https://hyerls.my.id/api/ytmp3.php",
+            ytshort: "https://hyerls.my.id/api/ytshort.php",
+            tiktok: "https://hyerls.my.id/api/tiktok.php",
+            instagram: "https://hyerls.my.id/api/igdownload.php",
+            capcut: "https://hyerls.my.id/api/capcut.php"
+        };
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            loadHistoryUI();
+        });
+
+        // Auto-detect Platform from URL input
+        function handleUrlInput() {
+            const urlInput = document.getElementById('media-url').value.trim();
+            const clearBtn = document.getElementById('clear-btn');
+            
+            clearBtn.classList.toggle('hidden', urlInput === '');
+
+            if (!urlInput) {
+                resetServiceHighlight();
+                updateBadge("Deteksi Otomatis Aktif", "fa-wand-magic-sparkles", "text-cyan-400");
+                return;
+            }
+
+            const detected = detectPlatform(urlInput);
+            if (detected) {
+                selectService(detected.id, false);
+                updateBadge(`Terdeteksi: ${detected.name}`, detected.icon, "text-emerald-400");
+            } else {
+                resetServiceHighlight();
+                updateBadge("Platform Tidak Dikenali - Silakan Pilih Manual", "fa-circle-exclamation", "text-amber-400");
+            }
+        }
+
+        // Platform Detection Logic
+        function detectPlatform(url) {
+            const lower = url.toLowerCase();
+            if (lower.includes('tiktok.com') || lower.includes('vt.tiktok.com')) return { id: 'tiktok', name: 'TikTok', icon: 'fa-brands fa-tiktok' };
+            if (lower.includes('instagram.com') || lower.includes('instagr.am')) return { id: 'instagram', name: 'Instagram', icon: 'fa-brands fa-instagram' };
+            if (lower.includes('youtube.com/shorts')) return { id: 'ytshort', name: 'YouTube Shorts', icon: 'fa-solid fa-bolt-lightning' };
+            if (lower.includes('youtube.com') || lower.includes('youtu.be')) return { id: 'ytmp4', name: 'YouTube Video', icon: 'fa-brands fa-youtube' };
+            if (lower.includes('open.spotify.com')) return { id: 'spotify', name: 'Spotify', icon: 'fa-brands fa-spotify' };
+            if (lower.includes('pin.it') || lower.includes('pinterest.com')) return { id: 'pinterest', name: 'Pinterest', icon: 'fa-brands fa-pinterest' };
+            if (lower.includes('terabox') || lower.includes('1024tera.com')) return { id: 'terabox', name: 'TeraBox', icon: 'fa-solid fa-box-archive' };
+            if (lower.includes('capcut.com')) return { id: 'capcut', name: 'CapCut', icon: 'fa-solid fa-scissors' };
+            return null;
+        }
+
+        function updateBadge(text, icon, colorClass) {
+            const badge = document.getElementById('detected-service');
+            badge.className = `flex items-center gap-1.5 font-medium ${colorClass}`;
+            badge.innerHTML = `<i class="${icon}"></i> ${text}`;
+        }
+
+        function selectService(serviceId, clearManual = true) {
+            currentService = serviceId;
+            resetServiceHighlight();
+            
+            const btn = document.getElementById(`service-${serviceId}`);
+            if (btn) {
+                btn.classList.add('border-cyan-400', 'bg-blue-600/30', 'shadow-lg', 'shadow-blue-500/20');
+            }
+
+            const iconMap = {
+                tiktok: 'fa-brands fa-tiktok text-pink-400',
+                instagram: 'fa-brands fa-instagram text-amber-400',
+                ytmp4: 'fa-brands fa-youtube text-red-500',
+                ytmp3: 'fa-solid fa-music text-red-400',
+                ytshort: 'fa-solid fa-bolt-lightning text-red-600',
+                spotify: 'fa-brands fa-spotify text-emerald-400',
+                pinterest: 'fa-brands fa-pinterest text-red-400',
+                capcut: 'fa-solid fa-scissors text-cyan-400',
+                terabox: 'fa-solid fa-box-archive text-blue-400'
+            };
+
+            const platformIcon = document.getElementById('platform-icon');
+            if (iconMap[serviceId]) {
+                platformIcon.className = `${iconMap[serviceId]} text-lg`;
+            }
+        }
+
+        function resetServiceHighlight() {
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('border-cyan-400', 'bg-blue-600/30', 'shadow-lg', 'shadow-blue-500/20');
+            });
+        }
+
+        function clearInput() {
+            document.getElementById('media-url').value = '';
+            document.getElementById('clear-btn').classList.add('hidden');
+            resetServiceHighlight();
+            updateBadge("Deteksi Otomatis Aktif", "fa-wand-magic-sparkles", "text-cyan-400");
+        }
+
+        async function pasteClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('media-url').value = text;
+                handleUrlInput();
+                showToast("Tautan berhasil ditempel!", "success");
+            } catch (err) {
+                showToast("Gagal mengakses papan klip. Tempel secara manual.", "error");
+            }
+        }
+
+        // DOWNLOAD CORE LOGIC
+        async function startDownload() {
+            const urlInput = document.getElementById('media-url').value.trim();
+            if (!urlInput) {
+                showToast("Masukkan URL media terlebih dahulu!", "warning");
+                return;
+            }
+
+            if (!currentService) {
+                const detected = detectPlatform(urlInput);
+                if (detected) {
+                    currentService = detected.id;
+                } else {
+                    currentService = 'tiktok'; // Fallback default
+                }
+            }
+
+            const loadingState = document.getElementById('loading-state');
+            const resultSection = document.getElementById('result-section');
+            const downloadBtn = document.getElementById('download-btn');
+
+            loadingState.classList.remove('hidden');
+            resultSection.classList.add('hidden');
+            downloadBtn.disabled = true;
+
+            const apiKey = localStorage.getItem('sky_custom_api_key') || DEFAULT_API_KEY;
+
+            try {
+                let responseData = null;
+
+                // Priority 1: Try local Serverless Endpoint /api/download (Vercel)
+                try {
+                    const serverlessRes = await fetch(`/api/download?service=${currentService}&url=${encodeURIComponent(urlInput)}`);
+                    if (serverlessRes.ok) {
+                        responseData = await serverlessRes.json();
+                    }
+                } catch (e) {
+                    // Serverless fallback to direct fetch if running locally without backend
+                }
+
+                // Priority 2: Direct Fetch API
+                if (!responseData) {
+                    const targetEndpoint = `${ENDPOINTS[currentService]}?key=${apiKey}&url=${encodeURIComponent(urlInput)}`;
+                    const directRes = await fetch(targetEndpoint);
+                    responseData = await directRes.json();
+                }
+
+                if (responseData) {
+                    parseAndDisplayResult(responseData, currentService, urlInput);
+                    showToast("Media berhasil diambil!", "success");
+                } else {
+                    throw new Error("Gagal mendapatkan respons valid dari peladen.");
+                }
+
+            } catch (error) {
+                console.error("Download Error:", error);
+                showToast(`Gagal memproses media: ${error.message || 'Periksa koneksi / link'}`, "error");
+            } finally {
+                loadingState.classList.add('hidden');
+                downloadBtn.disabled = false;
+            }
+        }
+
+        // Parse & Render Download Result
+        function parseAndDisplayResult(data, service, originalUrl) {
+            const resultSection = document.getElementById('result-section');
+            const thumbImg = document.getElementById('media-thumb');
+            const thumbPlaceholder = document.getElementById('thumb-placeholder');
+            const titleEl = document.getElementById('res-title');
+            const authorEl = document.getElementById('res-author');
+            const videoDlBtn = document.getElementById('btn-dl-video');
+            const audioDlBtn = document.getElementById('btn-dl-audio');
+            const playerContainer = document.getElementById('player-container');
+            const videoPreview = document.getElementById('video-preview');
+            const audioPreview = document.getElementById('audio-preview');
+
+            // Reset player states
+            videoPreview.classList.add('hidden');
+            audioPreview.classList.add('hidden');
+            playerContainer.classList.add('hidden');
+            audioDlBtn.classList.add('hidden');
+
+            // Extraction strategy based on typical API structure
+            let mediaUrl = "";
+            let audioUrl = "";
+            let title = "Media Result";
+            let author = "SkySaver User";
+            let thumbnail = "";
+
+            // Handle various JSON schemas
+            const resultObj = data.result || data.data || data;
+
+            if (typeof resultObj === 'string') {
+                mediaUrl = resultObj;
+            } else if (resultObj) {
+                // Video URLs
+                mediaUrl = resultObj.video || resultObj.url || resultObj.download_url || resultObj.nowatermark || resultObj.mp4 || resultObj.link || (Array.isArray(resultObj) ? resultObj[0] : "");
+                // Audio URLs
+                audioUrl = resultObj.audio || resultObj.mp3 || resultObj.music || "";
+                // Metadata
+                title = resultObj.title || resultObj.caption || resultObj.desc || `${service.toUpperCase()} Downloaded Media`;
+                author = resultObj.author?.nickname || resultObj.author || resultObj.uploader || service;
+                thumbnail = resultObj.thumbnail || resultObj.cover || resultObj.image || "";
+            }
+
+            // Fallback for direct download link
+            if (!mediaUrl && audioUrl) {
+                mediaUrl = audioUrl;
+            }
+
+            lastResultUrl = mediaUrl || originalUrl;
+
+            // Render Metadata
+            titleEl.textContent = title;
+            authorEl.querySelector('span').textContent = author;
+
+            if (thumbnail) {
+                thumbImg.src = thumbnail;
+                thumbImg.classList.remove('hidden');
+                thumbPlaceholder.classList.add('hidden');
+            } else {
+                thumbImg.classList.add('hidden');
+                thumbPlaceholder.classList.remove('hidden');
+            }
+
+            // Set Download Button Links
+            videoDlBtn.href = mediaUrl;
+            if (service === 'spotify' || service === 'ytmp3') {
+                videoDlBtn.innerHTML = `<i class="fa-solid fa-music"></i> Unduh Lagu MP3`;
+            } else {
+                videoDlBtn.innerHTML = `<i class="fa-solid fa-download"></i> Unduh Video (Tanpa Watermark)`;
+            }
+
+            if (audioUrl && service !== 'ytmp3' && service !== 'spotify') {
+                audioDlBtn.href = audioUrl;
+                audioDlBtn.classList.remove('hidden');
+            }
+
+            // Inline Media Players
+            if (mediaUrl && (service === 'tiktok' || service === 'instagram' || service === 'ytmp4' || service === 'ytshort' || service === 'capcut')) {
+                videoPreview.src = mediaUrl;
+                videoPreview.classList.remove('hidden');
+                playerContainer.classList.remove('hidden');
+            } else if (mediaUrl && (service === 'spotify' || service === 'ytmp3')) {
+                audioPreview.src = mediaUrl;
+                audioPreview.classList.remove('hidden');
+                playerContainer.classList.remove('hidden');
+            }
+
+            resultSection.classList.remove('hidden');
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Save to LocalStorage History
+            saveToHistory({
+                service,
+                title,
+                url: mediaUrl,
+                date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+        }
+
+        function copyDirectLink() {
+            if (!lastResultUrl) return;
+            navigator.clipboard.writeText(lastResultUrl);
+            showToast("Tautan langsung berhasil disalin!", "info");
+        }
+
+        // History Storage Logic
+        function saveToHistory(item) {
+            let history = JSON.parse(localStorage.getItem('sky_download_history') || '[]');
+            history.unshift(item);
+            if (history.length > 6) history.pop();
+            localStorage.setItem('sky_download_history', JSON.stringify(history));
+            loadHistoryUI();
+        }
+
+        function loadHistoryUI() {
+            const history = JSON.parse(localStorage.getItem('sky_download_history') || '[]');
+            const historyList = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `<div class="col-span-full glass-panel p-6 rounded-2xl text-center text-slate-500 text-xs">Belum ada riwayat unduhan.</div>`;
+                return;
+            }
+
+            historyList.innerHTML = history.map(item => `
+                <div class="glass-panel p-3 rounded-2xl flex items-center justify-between gap-3 hover:bg-white/10 transition">
+                    <div class="overflow-hidden">
+                        <span class="text-[10px] uppercase font-bold text-cyan-400">${item.service}</span>
+                        <p class="text-xs font-semibold text-white truncate">${item.title}</p>
+                        <span class="text-[10px] text-slate-500">${item.date}</span>
+                    </div>
+                    <a href="${item.url}" target="_blank" download class="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500 text-cyan-300 hover:text-white transition text-xs">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('sky_download_history');
+            loadHistoryUI();
+            showToast("Riwayat unduhan dibersihkan.", "info");
+        }
+
+        // Toast Notification Function
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgMap = {
+                success: 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200',
+                error: 'bg-red-950/90 border-red-500/50 text-red-200',
+                warning: 'bg-amber-950/90 border-amber-500/50 text-amber-200',
+                info: 'bg-blue-950/90 border-blue-500/50 text-cyan-200'
+            };
+
+            const iconMap = {
+                success: 'fa-circle-check text-emerald-400',
+                error: 'fa-circle-xmark text-red-400',
+                warning: 'fa-triangle-exclamation text-amber-400',
+                info: 'fa-circle-info text-cyan-400'
+            };
+
+            toast.className = `glass-panel px-4 py-3 rounded-2xl border text-xs font-semibold flex items-center gap-2.5 shadow-2xl transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto ${bgMap[type]}`;
+            toast.innerHTML = `<i class="fa-solid ${iconMap[type]} text-sm"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Modal Handlers
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('custom-api-key').value.trim();
+            if (key) {
+                localStorage.setItem('sky_custom_api_key', key);
+                showToast("Pengaturan API disimpan!", "success");
+                toggleSettingsModal();
+            }
+        }
+    </script>
+</body>
+</html>
